@@ -1,0 +1,422 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<dom-module id="audio-recorder">
+    <template>
+        <style include="shared-styles-typeG">
+            :host { width: 100%; margin-right: var(--app-standart-border-radius); } article { box-shadow: var( --app-toolbar-box-shadow);
+            border-radius: var(--app-standart-border-radius); margin-top: 6px; width: 164px; background-color: var(--app-primary-background-color);
+            padding-left: 9px; display: flex; flex-flow: column; } iron-input { flex-basis: 25px; } span, label[for=range]
+            { color: var(--app-color) } .open[open] { height: auto } audio { width: 128px } paper-icon-button { color: var(--app-color)
+            } paper-icon-button[record] { display: block } paper-icon-button { display: none } .red { color: var(--app-color-3)
+            } .red[paused] { color: initial } section[list-box-hiden] { display: none } section[list-box-hiden][boxShow]
+            { display: block } paper-item[sellected] { background-color: chartreuse } paper-button { font-size: var(--app-type-button-font-size);
+            } aside[apllyWith] { border-top: 0.4px solid #b6b6b6b3 } paper-icon-button[icon="eject"] { transform: rotate(90deg)
+            } paper-icon-button[icon="av:play-arrow"][play] { background-color: var(--app-type-sellected-background-color)
+            } paper-icon-button[pause] { display: none } paper-icon-button[icon="query-builder"] { display: block }
+        </style>
+        <app-location route="{{route}}"></app-location>
+        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}" query-params="{{query}}"></app-route>
+        <article>
+            <label for="range">[[elemTitle]]
+                <span>[[type]]</span>
+                <button on-click="removeCall"> x </button>
+            </label>
+            <section id="title" class="open" open$="[[!open]]">
+                <paper-item>
+                    <paper-item-body two-line>
+                        <paper-input class="diferent" title="Elapsed time" label="[[state]]" value="{{Elapsed}}">
+                        </paper-input>
+                        <audio id="audio" class="diferent" title="Elapsed Time" on-timeupdate="timeupdate" label="Elapsed Time">
+                        </audio>
+                    </paper-item-body>
+                    <paper-icon-button on-click="toggleTimeView" icon="query-builder" title="toggle time view"></paper-icon-button>
+                </paper-item>
+                <aside apllyWith>
+                    <paper-item>
+                        <paper-item-body two-line>
+                        </paper-item-body>
+                        <paper-icon-button on-click="toggleRecording" icon="radio-button-checked" class="red" record$="[[record]]" paused$="[[paused]]"
+                            title="toggle recording">
+                        </paper-icon-button>
+                        <paper-icon-button on-click="toggleRecording" icon="radio-button-unchecked" record$="[[!record]]" title="toggle recording">
+                        </paper-icon-button>
+                        <paper-icon-button on-click="toggleRecordingPause" icon="av:pause" record$="[[record]]" pause$="[[!pause]]" title="toggle pause">
+                        </paper-icon-button>
+                        <paper-icon-button on-click="toggleRecordingPause" icon="eject" record$="[[record]]" pause$="[[pause]]" title="toggle pause">
+                        </paper-icon-button>
+                        <paper-icon-button on-click="playRecording" icon="av:play-arrow" record$="[[!record]]" play$="[[play]]" title="play recorded - opens new File Source">
+                        </paper-icon-button>
+                        <paper-icon-button on-click="downloadRecording" icon="file-download" record$="[[!record]]" play$="[[play]]" title="play recorded - opens new File Source">
+                        </paper-icon-button>
+                    </paper-item>
+                </aside>
+                <aside apllyWith>
+                    <paper-menu-button>
+                        <paper-button slot="dropdown-trigger" alt="menu">aplly with</paper-button>
+                        <paper-listbox slot="dropdown-content">
+                            <template id="applyNode" is="dom-repeat" items="{{keys}}" as="key" mutable-data="true">
+                                <paper-item id="apllyNow" on-click="showBox">[[key]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </aside>
+            </section>
+            <section list-box-hiden boxShow$="[[boxShow]]" on-click="hidewBox2">
+                <paper-listbox slot="dropdown-content" multi>
+                    <template is="dom-repeat" items="{{applicables}}" as="applicable" mutable-data="true">
+                        <paper-item on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
+                    </template>
+                </paper-listbox>
+            </section>
+            <div class="open divtitle-area" open$="[[open]]">
+                <section id="title" class="open" open$="[[open]]">
+                    <paper-input class="diferent" id="titleInput" min="0" max="5" step="0.5" label="new title" title="new title" value="{{elemTitle}}">
+                    </paper-input>
+                    <paper-button on-click="submit" raised>aplly title </paper-button>
+                </section>
+            </div>
+        </article>
+    </template>
+    <script>
+        class audioRecorder extends Polymer.Element {
+            static get is() {
+                return 'audio-recorder';
+            }
+            constructor() {
+                super();
+            }
+            ready() {
+                super.ready()
+                window.addEventListener('apllywith', (event) => {
+                    this.applyer()
+                }, false)
+            }
+            static get properties() {
+                return {
+                    timeView: {
+                        type: Boolean,
+                        value: true
+                    },
+                    Elapsed: {
+                        type: String
+                    },
+                    elapAnimation: {
+                        type: Number
+                    },
+                    state: {
+                        type: String,
+                        value: 'inactive'
+                    },
+                    boxShow: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    applicables: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        },
+                        notify: true
+                    },
+                    keys: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        },
+                        notify: true
+                    },
+                    type: {
+                        type: String,
+                        value: 'Destination'
+                    },
+                    promisse: {
+                        type: Boolean,
+                        value: undefined
+                    },
+                    elemTitle: {
+                        type: String
+                    },
+                    titleFuncion: {
+                        type: String,
+                        value: 'destination'
+                    },
+                    agentClass: {
+                        type: Object
+                    },
+                    gUM: {
+                        type: Object,
+                        computed: 'gUMStart(agentClass)'
+                    },
+                    constraints: {
+                        type: Object,
+                        value: function () {
+                            return { audio: true }
+                        }
+                    },
+                    record: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    paused: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    pause: {
+                        type: Boolean,
+                        value: true,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    open: {
+                        type: Boolean,
+                        value: true,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    count: {
+                        type: Number,
+                        value: 0
+                    },
+                    recorder: {
+                        type: Object
+                    },
+                    recordedAudio: {
+                        type: Array,
+                        value: [0]
+                    },
+                    kill: {
+                        type: Boolean,
+                        value: false
+                    },
+                    blob: {
+                        type: Object
+                    },
+                    blob2: {
+                        type: Object
+                    }
+                }
+            }
+
+            static get observers() {
+                return [
+                    '_routePageChanged(routeData)'
+                ]
+            }
+
+            _routePageChanged(routeData) {
+                if (routeData.page === 'apllywith') {
+                    this.applyer()
+                }
+            }
+
+            applyer() {
+                this.keys = [0]
+                let keys = Object.keys(this.agentClass.applicables)
+                let arr = [], arr2 = []
+                for (let i = 0; i < keys.length; i++) {
+                    if (keys[i] === this.elemTitle && this.agentClass.applicables[keys[i]].arr.length > 1) {
+                        arr.push(keys[i])
+                    }
+                    if (keys[i] !== this.elemTitle) {
+                        arr.push(keys[i])
+                    }
+                }
+                console.log('apllied')
+                this.keys = arr
+            }
+
+            showBox(event) {
+                this.boxShow = true
+                this.applicables = [0]
+                let arr2 = []
+                for (let j = 0; j < this.agentClass.applicables[event.model.__data.key].arr.length; j++) {
+                    if (this.agentClass.applicables[event.model.__data.key].arr[j].titleFuncion !== this.titleFuncion) {
+                        arr2.push(this.agentClass.applicables[event.model.__data.key].arr[j])
+                    }
+
+                }
+                this.applicables = arr2
+            }
+
+            hidewBox2(event) {
+                this.boxShow = false
+            }
+
+            hidewBox(event) {
+                this.boxShow = false
+                let bool = event.model.children[1].hasAttribute('sellected') === true ? false : true
+                let name = event.model.__data.applicable.elemTitle + event.model.__data.applicable
+                    .titleFuncion.split(' ').join('').toLocaleUpperCase()
+                if (bool === true) {
+                    this.agentClass.setAppliesWith((err) => {
+                        event.model.children[1].setAttribute('sellected', true)
+                    }, { elemTitle: event.model.__data.applicable.titleFuncion, elem: this.$.apllyNow, titleFuncion: this.titleFuncion })
+                }
+                if (bool === false) {
+                    event.model.children[1].removeAttribute('sellected', true)
+                    this.agentClass.revoveAppliesWith((err) => {
+                        if (err) console.error(err)
+                    }, event.model.__data.applicable.titleFuncion, this.titleFuncion)
+                }
+            }
+
+            timeupdate(event) {
+                // console.log(event)
+                let timeupdate = this.timeView === true ? ('' + event.timeStamp).split('.')[0] : event.timecode
+                this.Elapsed = timeupdate.toString()
+            }
+
+            toggleTimeView() {
+                this.timeView = !this.timeView
+            }
+
+            toggleRecording() {
+                this.record = !this.record
+                if (this.recorder && this.record === true) {
+                    let that = this.agentClass
+                    this.waiting = true
+                    let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
+                    if (that.appliesWith[name]) {
+                        for (let i = 0; i < that.appliesWith[name].length; i++) {
+                            that.appliesWith[name][i].elem.click()
+                        }
+                    }
+                    var inter = setInterval(() => {
+                        this.paused = !this.paused
+                        this.state = 'no connection...!'
+                        if (this.kill == true) {
+                            clearInterval(inter)
+                            this.state = this.recorder.state
+                        }
+                    }, 500)
+                    this.recorder.onstop = (this.handleStop).bind(this);
+                    this.recorder.start(1000);
+                    this.recorder.ondataavailable = event => {
+                        this.paused = false
+                        this.kill = true
+                        this.timeupdate(event)
+                        if (event.data && event.data.size > 0) {
+                            this.recordedAudio.push(event.data);
+                        }
+                    };
+                    this.state = this.recorder.state
+                } else {
+                    this.recorder.stop(1000)
+                    this.state = this.recorder.state
+                }
+            }
+
+            playRecording() {
+                var fileReader = new FileReader(), soundSource, that = this.agentClass
+                soundSource = that.context.createBufferSource();
+                fileReader.onload = function (progressEvent) {
+
+                    that.context.decodeAudioData(this.result).then(function (buffer) {
+                        /* let concertHallBuffer = buffer;
+                         soundSource.buffer = concertHallBuffer*/
+                    }).catch(function (e) { console.log("Error with decoding audio data " + e.err); })
+                    soundSource.connect(that.context.destination);
+                    //soundSource.loop = true;
+                    soundSource.start();
+                }
+                fileReader.readAsArrayBuffer(this.blob2);
+            }
+
+            downloadRecording() {
+                var url = window.URL.createObjectURL(this.blob);
+                var a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = Math.floor(Math.random(1) * 1000) + 'test.mp3';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a)
+            }
+
+            handleStop() {
+                if (this.recordedAudio.length > 1) {
+                    this.blob = new Blob(this.recordedAudio, { 'type': 'audio/ogg; codecs=opus' });
+                    this.blob2 = new Blob(this.recordedAudio, { 'type': 'audio/webm; codecs=vp9' });
+                    this.recordedAudio = [0]
+                }
+            }
+
+            toggleRecordingPause() {
+                this.pause = !this.pause
+                this.paused = !this.paused
+                if (this.recorder && this.pause === false) {
+                    this.recorder.pause()
+                    this.state = this.recorder.state
+                } else {
+                    this.recorder.resume()
+                    this.state = this.recorder.state
+                }
+            }
+
+
+            submit() {
+                setTimeout(() => {
+                    if (this.$.titleInput.value.length > 0) {
+                        this.agentClass.setStreamDestination((err, stream) => {
+                            if (typeof err === 'object') {
+                                throw this.error('input ', err);
+                            } else if (typeof err === 'string') {
+                                this.$.titleInput.value = 'already exists'
+                                throw this.error('input ', err);
+                                setTimeout(() => {
+                                    this.$.titleInput.value = ''
+                                    this.elemTitle = ''
+                                }, 1000)
+                            }
+                            if (err === false) {
+                                console.log(err)
+                                this.elemTitle = this.elemTitle.split(' ').join('')
+                                window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
+                                this.agentClass.setApplicable(() => {
+                                    window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                                }, { elemTitle: this.elemTitle, arr: [{ elemTitle: this.elemTitle, elem: this.$.apllyNow, titleFuncion: 'destination' }] }
+                                )
+                                this.open = false
+                                let options = { mimeType: 'audio/webm', audioBitsPerSecond: 128000 }
+                                this.recorder = new MediaRecorder(stream, options)
+                            }
+                        }, this.elemTitle)
+                    }
+                }, 500)
+            }
+
+            error(msg, err) {
+                console.error(msg, err);
+            }
+
+            removeCall() {
+                if (this.open === false) {
+                    this.agentClass.revoveElemTitle(() => {
+                        window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                        delete this.agentClass.streamNode[this.elemTitle]
+                        this.parentElement.removeChild(this)
+                        window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
+                    }, this.elemTitle)
+                    console.log(this, this.parentElement)
+                } else {
+                    alert('insert tytle to remove item')
+                }
+            }
+        }
+        window.customElements.define(audioRecorder.is, audioRecorder);
+    </script>
+</dom-module>

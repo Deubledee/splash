@@ -1,0 +1,670 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Latest compiled and minified CSS -->
+    <link type="text/css" rel="stylesheet" href="public/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="public/css/stylish.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"> </script>
+</head>
+
+<body>
+    <nav id="header1" class=" navbar navbar-default">
+        <div class="col-xs-12 ">
+            <h3>
+                <b>Versage</b>
+            </h3>
+        </div>
+    </nav>
+
+    <div class="content modal" id="windowErr">
+        <div class="row" tabindex="-1" role="dialog" aria-hidden="false">
+            <div class="modal-dialog">
+                <div class="modal-content-primary navbar-default col-xs-8" id="activeRoom">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="errorhandler()">×</button>
+                        <div class="col-xs-12">
+                            <h3>
+                                <b id="errorHeader">ERROR</b>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="modal-body-primary">
+                        <div class="form col-lg-12 center-block">
+                            <div class="form-group" id="windowErrMsg">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content" id="nickWrap">
+        <div class="row " tabindex="-1" role="dialog" aria-hidden="false">
+            <div class="modal-dialog">
+                <div class="modal-content-primary navbar-default col-xs-8">
+                    <div class="modal-header">
+                        <div class="text-center col-xs-12">
+                            <h3>
+                                <b>Login</b>
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="modal-body-primary">
+                        <div class="form col-lg-12 center-block">
+                            <div class="form-group">
+                                <input id="nickname" type="text" class="form-control input-xs" placeholder="Nickname">
+                            </div>
+                            <div class="form-group">
+                                <input id="pass" type="password" class="form-control input-xs" placeholder="Password">
+                            </div>
+                            <div class="form-group">
+
+                                <button class="btn btn-default btn-xm btn-block" onclick="start('public')">Sign In</button>
+                                <span>
+                                    <a href="#">Register</a>
+                                </span>
+                                <span>
+                                    <a href="#">
+                                        <button class="img-rounded label label-primary pull-right">Cancel</button>
+                                        <br>
+                                    </a>
+                                </span>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="header2">
+        <div class="col-xs-4">
+            <button type="button" class="btn btn-primary navbar-btn" onclick="toggleSidebar('sidebar-wrapper')">
+                Users
+            </button>
+        </div>
+        <div class="col-xs-4 text-center ">
+            <h3 class="header2h3">
+                <b>Versage</b>
+            </h3>
+
+        </div>
+        <div class=" col-xs-4">
+            <button type="button" class="btn btn-primary navbar-btn pull-right" onclick="toggleSidebar2('sidebar-wrapper2')">
+                Rooms
+
+            </button>
+        </div>
+    </div>
+
+
+    <div id="contentWrap" class="container">
+        <div id="wrapper">
+            <!-- Sidebar -->
+            <div id="sidebar-wrapper">
+                <div class="sidebar-nav panel panel-primary">
+                    <div id="roomLb" class="panel-heading">
+                        <h3 class="panel-title" id="roomLb2">room public user diogo</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-xs-12" id="users">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="wrapper2">
+            <!-- Sidebar -->
+            <div id="sidebar-wrapper2">
+                <div class="">
+                    <div class="">
+                        <h3 class="">Rooms</h3>
+                    </div>
+                    <div class="">
+                        <div class="col-xs-12" id="buttonArea">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- media area -->
+
+        <div class="container">
+            <div class="row center">
+                <div class="sideBySide">
+                    <div class="video">
+                        <video autoplay="true" class="col-xs-12" id="videoElement">
+                        </video>
+                        <div class="">
+                            <button class="btn-lg" onclick="onGetUserMediaButtonClick()"> get media</button>
+                            <button class="btn-lg" onclick="onGrabFrameButtonClick()"> grab frame</button>
+                            <button class="btn-lg" onclick="onTakePhotoButtonClick()"> take photo</button>
+                            <button class="btn-lg" onclick="getFromVideoElement()">from Element</button>
+                        </div>
+                    </div>
+                    <div class="video">
+                        <video autoplay="true" class="videoElement4" id="videoElement4">
+                        </video>
+                        <div class="">
+                            <button class="btn btn-lg" onclick="hangup()"> hangup </button>
+                            <button class="btn btn-lg" onclick="createOffer()"> restart </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <audio id="gum-local" autoplay></audio>
+                </div>
+                <div class="col-xs-12">
+                    <audio id="gum-remote" autoplay></audio>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="col-xs-8">
+                        <button class="btn-lg" onclick="toRecord('#videoElement')">record</button>
+                        <button class="btn-lg" onclick="toStopRecord()"> Stop Record</button>
+                        <button class="btn-lg" onclick="toDownload()"> Download Recorded</button>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="row">
+                <div class="col-xs-12">
+
+                </div>
+            </nav>
+
+            <div class="row ">
+                <div class="row schoosh">
+                    <div class="col-xs-4">
+                        <div class="col-xs-12">
+                            <label for="videoElement2">videoElement2</label>
+                        </div>
+                        <div class="col-xs-12">
+                            <video autoplay="true" controls id="videoElement2">
+                            </video>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-4">
+                        <div class="col-xs-12">
+                            <label for="videoElement3">videoElement3</label>
+                        </div>
+                        <div class="col-xs-12">
+                            <video autoplay="true" controls id="videoElement3">
+                            </video>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4 bottom">
+                    <button class="btn btn-lg" onclick="toPlayRecorded()"> Play Recorded</button>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row rowseparation">
+            <div class="col-xs-4">
+                <canvas id="grabFrameCanvas"></canvas>
+                <nav class="navbar">
+                    <button class="btn-lg" onclick="toRecord('#grabFrameCanvas')">record</button>
+                    <button class="btn-lg" onclick="toStopRecord()"> Stop Record</button>
+                </nav>
+            </div>
+
+            <div class="col-xs-4">
+                <canvas id="takePhotoCanvas"></canvas>
+                <nav class="navbar">
+                    <button class="btn-lg" onclick="toRecord('#takePhotoCanvas')">record</button>
+                    <button class="btn-lg" onclick="toStopRecord()"> Stop Record</button>
+                </nav>
+            </div>
+
+            <div class="col-xs-8">
+                <canvas id="getFromVideoElement"></canvas>
+                <nav class="navbar">
+                    <button class="btn-lg" onclick="toRecord('#getFromVideoElement')">record</button>
+                    <button class="btn-lg" onclick="toStream('#getFromVideoElement', '#videoElement3')">stream</button>
+                    <button class="btn-lg" onclick="toStopRecord()"> Stop Record</button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- chat Area -->
+
+        <div class="row ">
+            <div id="chatBox" class="chatBox">
+                <div id="page-content-wrapper" class="col-xs-12 scrollbar">
+                    <div class="col-xs-8" id="chat">
+
+                    </div>
+                </div>
+            </div>
+            <div class="navbar navbar-fixed-bottom">
+                <div class="col-xs-12">
+                    <input type="text" class="form-control" placeholder="message" id="message">
+                    <button class="btn btn-sm" onclick="newMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script> 
+        var imageCapture;
+        var audioCapture;
+        var kill = {
+            setTimeout: false
+        }
+        /****************************************************************************
+        * WebRTC peer connection 
+        ****************************************************************************/
+        var conUser = { user: '' }
+        var startTime;
+        var recordedVideo = new Array()
+        var recordedAudio = new Array()
+        var videoRecorder, audioRecorder
+        var localVideo = document.querySelector('#videoElement')
+        var localAudio = document.querySelector('#gum-local')
+        var remoteVideo = document.querySelector('#videoElement4')
+        var remoteAudio = document.querySelector('#gum-remote')
+        var stream = localAudio.captureStream()
+        var peerOfferConn
+        var peerAnswerConn
+        var myIp
+        var noPublic = false
+        var offerOptions = {
+            offerToReceiveAudio: 1,
+            offerToReceiveVideo: 1,
+            iceRestart: false,
+            voiceActivityDetection: true
+        };
+        var config = null;
+        var restReq = 0
+        /*******************************get public ip***********************************/
+
+
+        function signalingMessageCallback(user, message) {
+            if (message.msg.type === 'offer') {
+                onRemoteOffer(user, message)
+            }
+            else if (message.msg.type === 'answer') {
+                console.log('message ip', message.ip)
+                conUser.user = user
+                peerOfferConn.setRemoteDescription(new RTCSessionDescription(message.msg), function (data) {
+                }, logError);
+                peerOfferConn.onicecandidate = onIceCandidate1
+                peerOfferConn.onicegatheringstatechange = onicegatheringstatechange;
+            }
+            else if (message.msg.type === 'candidate') {
+                conUser.user = user
+                /*******************************************/
+                /*   sender false means it's not           */
+                /*   the peer's own sent message           */
+                /*   as it is understood by the server     */
+                /*******************************************/
+                if (message.sender === false && peerOfferConn) {
+                    console.log('candidate', user)
+                    peerOfferConn.addIceCandidate(new RTCIceCandidate({
+                        candidate: message.msg.candidate
+                    }));
+                }
+            }
+            else if (message.msg === 'bye') {
+                console.log('bye from.', user);
+                conUser.user = ''
+                hangup()
+            }
+            else if (message.msg.type === 'restart') {
+                console.log('restart request from.', user);
+                if (restReq <= 5) {
+                    createOffer()
+                    restReq += 1
+                    console.log('restart offer #.', restReq);
+                } else {
+                    console.log('restart offer exceeded', restReq, 'requests! Canceling restart offer requests from', user);
+                }
+            }
+        }
+
+        function createPeerConnection(user) {
+            if (peerOfferConn) {
+                while (peerOfferConn.getLocalStreams().length > 0) {
+                    peerOfferConn.removeStream(peerOfferConn.getLocalStreams()[peerOfferConn.getLocalStreams().length - 1]);
+                    console.log('ithink yo got it now')
+                }
+                peerOfferConn.close();
+                peerOfferConn = null;
+            }
+            conUser.user = user
+            peerOfferConn = new RTCPeerConnection(config);
+            console.log('created RTC Connection');
+            stream.getTracks().forEach(function (track) {
+                peerOfferConn.addTrack(
+                    track,
+                    stream
+                );
+            });
+            createOffer()
+        }
+
+        function createOffer() {
+            peerOfferConn.createOffer(offerOptions)
+                .then(function (desc) {
+                    peerOfferConn.setLocalDescription(desc);
+                    sendMessage(conUser.user, desc);
+                    //console.log(desc.sdp);
+                })
+                .catch(function (error) {
+                    console.log('Failed to createOffer: ', error);
+                });
+        }
+
+        function onRemoteOffer(user, message) {
+            let mess = message.msg
+            if (message.sender === false) {
+                peerAnswerConn = new RTCPeerConnection(config);
+                conUser.user = user
+                peerAnswerConn.setRemoteDescription(new RTCSessionDescription(mess), function (data) {
+                    console.log('set Remote Description success')
+                }, logError);
+                //     console.log('Sending answer to peer')
+                peerAnswerConn.createAnswer(gotDescription, logError);
+                peerAnswerConn.onicecandidate = onIceCandidate2
+                peerAnswerConn.onicegatheringstatechange = onicegatheringstatechange;
+                peerAnswerConn.ontrack = gotRemoteStream;
+            } else {
+                console.log(message.msg.sdp, message.nick, message.room)
+            }
+        }
+
+        function gotDescription(desc) {
+            // Final answer, setting a=recvonly & sdp type to answer.
+            // console.log('got desciption')
+            desc.sdp = desc.sdp.replace(/a=inactive/g, 'a=recvonly');
+            desc.type = 'answer';
+            peerAnswerConn.setLocalDescription(desc).then(
+                function (desc) {
+                    //         console.log('set Local Description success')
+                }, logError);
+            //   console.log('sending answer', desc)
+            sendMessage(conUser.user, desc);
+        }
+
+        function onIceCandidate1(event) {
+            if (event.candidate !== null) {
+                parseCandidate(event.candidate.candidate, candidate => {
+                    console.log('aliiiiiiiiiiiiiiiiiiiiiiiii!!!!', candidate)
+                    event.candidate.candidate = candidate
+                    peerOfferConn.addIceCandidate(event.candidate)
+                        .then(
+                            function () {
+                                console.log('event.candidate1', conUser.user, event.candidate)
+                                sendMessage(conUser.user, {
+                                    type: 'candidate',
+                                    label: event.candidate.sdpMLineIndex,
+                                    id: event.candidate.sdpMid,
+                                    candidate: event.candidate.candidate
+                                });
+
+                            }, logError);
+                })
+
+            }
+        }
+
+        function onIceCandidate2(event) {
+            if (event.candidate !== null) {
+                parseCandidate(event.candidate.candidate, candidate => {
+                    console.log('aquiiiiiiiiiiiiiiiiiiiiiiiii!!!!', candidate)
+                    event.candidate.candidate = candidate
+                    peerAnswerConn.addIceCandidate(event.candidate)
+                        .then(
+                            function () {
+                                console.log('event.candidate2', conUser.user, event.candidate)
+                                sendMessage(conUser.user, {
+                                    type: 'candidate',
+                                    label: event.candidate.sdpMLineIndex,
+                                    id: event.candidate.sdpMid,
+                                    candidate: event.candidate.candidate
+                                });
+                            }, logError);
+                })
+            }
+        }
+
+        function parseCandidate(text, call) {
+            var candidateStr = 'candidate:';
+            var pos = text.indexOf(candidateStr) + candidateStr.length;
+            var foundation = text.split(' ');
+            if (noPublic === false) {
+                foundation[4] = myIp
+            }
+            call(foundation.join(' '));
+        }
+
+        function sanityzeIp(ip) {
+            noPublic = ip === myIp ? true : false           
+        }
+
+        function gotRemoteStream(e) {
+            console.log('CaLlEd')
+            if (remoteVideo.srcObject !== e.streams[0]) {
+                remoteVideo.srcObject = e.streams[0];
+                remoteAudio.srcObject = e.streams[0];
+                //      console.log('got stream', e)
+                setTimeout(() => {
+                    if (remoteVideo.played.length === 0) {
+                        sendMessage(conUser.user, {
+                            type: 'restart'
+                        })
+                        console.log('restart....!!!')
+                    }
+                }, 3000)
+            }
+        }
+
+        function hangup() {
+            peerAnswerConn.close();
+            peerAnswerConn = null;
+        }
+
+        function onicegatheringstatechange(event) {
+            // if (pc) {
+            console.log('ICE state change event: ', event.type);
+            //}
+        }
+
+        function logError(err) {
+            console.log(err.toString(), err);
+        }
+
+        //media area #2
+
+        function onGetUserMediaButtonClick(user) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(mediaStream => {
+                    localVideo.srcObject = mediaStream;
+                    let audio = document.querySelector('#gum-local')
+                    audio.srcObject = mediaStream;
+                    const track = mediaStream.getVideoTracks()[0];
+                    imageCapture = new ImageCapture(track);
+                    audioCapture = audio.captureStream()
+                    console.log('media captured')                   
+                    if (user) {
+                        askIp(user)
+                        setTimeout(() => {
+                            createPeerConnection(user)
+                        }, 1000)
+                    }
+                })
+                .catch(error => console.log(error));
+        }
+
+        function getFromVideoElement() {
+            var video = document.querySelector('video')
+            var canvas = document.querySelector('#getFromVideoElement')
+            var ctx = canvas.getContext('2d')
+            canvas.width = video.clientWidth / 1.2
+            canvas.height = video.clientHeight / 1.2
+            ctx.drawImage(video, 0, 0, video.clientWidth / 1.2, video.clientHeight / 1.2);
+            toGrey(ctx, canvas)
+            ////loop this function\\\
+            kill.setTimeout = false
+            var time = setTimeout(() => {
+                if (kill.setTimeout === false) {
+                    getFromVideoElement()
+                } else {
+                    clearTimeout(time)
+                }
+            }, 1000 / 120)
+        }
+
+        function onGrabFrameButtonClick() {
+            let canvas = document.querySelector('#grabFrameCanvas'),
+                ctx = canvas.getContext('2d')
+            imageCapture.grabFrame()
+                .then(imageBitmap => {
+                    drawCanvas(canvas, imageBitmap);
+                    // toGrey(ctx, canvas)
+                })
+                .catch(error => {/*console.log(error)*/ });
+            ////loop this function\\\
+            kill.setTimeout = false
+            var time = setTimeout(() => {
+                if (kill.setTimeout === false) {
+                    onGrabFrameButtonClick()
+                } else {
+                    clearTimeout(time)
+                }
+            }, 1000 / 60)
+        }
+
+        function onTakePhotoButtonClick() {
+            imageCapture.takePhoto()
+                .then(blob => createImageBitmap(blob))
+                .then(imageBitmap => {
+                    const canvas = document.querySelector('#takePhotoCanvas');
+                    drawCanvas(canvas, imageBitmap);
+                })
+                .catch(error => console.log(error));
+            ////loop this function\\\
+            kill.setTimeout = false
+            var time = setTimeout(() => {
+                if (kill.setTimeout === false) {
+                    onTakePhotoButtonClick()
+                } else {
+                    clearTimeout(time)
+                }
+            }, 5000)
+        }
+        function toStop() {
+            kill.setTimeout = true
+        }
+        /* Utils */
+        function toGrey(ctx, canvas) {
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+            var data = imageData.data
+            for (let i = 0; i < data.length; i += 4) {
+                var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = avg; // red
+                data[i + 1] = avg; // green
+                data[i + 2] = avg; // blue
+            }
+            imageData.data = data
+            // toClear()
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function drawCanvas(canvas, img) {
+            canvas.width = getComputedStyle(canvas).width.split('px')[0];
+            canvas.height = getComputedStyle(canvas).height.split('px')[0];
+            let ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+            let x = (canvas.width - img.width * ratio) / 2;
+            let y = (canvas.height - img.height * ratio) / 2;
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
+                x, y, img.width * ratio, img.height * ratio);
+        }
+
+        /* Utils extended */
+
+        function handleDataAvailable(event) {
+            console.log('handling data to record', event.data)
+            if (event.data && event.data.size > 0) {
+                recordedVideo.push(event.data);
+            }
+        }
+
+        function toRecord(canvasId) {
+            var element = document.querySelector(canvasId)
+            var options = { mimeType: 'video/webm;codecs=vp9' },
+                stream = element.captureStream()
+            videoRecorder = new MediaRecorder(stream, options);
+            videoRecorder.onstop = handleStop;
+            recordedVideo = []
+            videoRecorder.start(25)
+            videoRecorder.ondataavailable = function (event) {
+                // console.log('handling data to record', event.data)
+                if (event.data && event.data.size > 0) {
+                    recordedVideo.push(event.data);
+                }
+            };
+        }
+
+        function toStopRecord() {
+            videoRecorder.stop()
+        }
+
+        function handleStop(event) {
+            console.log('Recorder stopped: ', event);
+        }
+
+        function toPlayRecorded() {
+            var blob = new Blob(recordedVideo, { type: 'video/webm' });
+            var url = window.URL.createObjectURL(blob);
+            document.querySelector('#videoElement2').src = ''
+            document.querySelector('#videoElement2').src = url
+            document.querySelector('#videoElement2').play()
+        }
+
+        function toStream(elemSrc, elemTrg) {
+            let src = document.querySelector(elemSrc)
+            let target = document.querySelector(elemTrg)
+            var stream = src.captureStream()
+            target.srcObject = stream
+        }
+
+        function toDownload() {
+            var blob = new Blob(recordedVideo, { type: 'video/webm' });
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = Math.floor(Math.random(1) * 1000) + 'test.webm';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function () {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 100);
+        }
+
+    </script>
+</body>
+
+<script src="public/js/togleandclose.js"></script>
+<script src="public/js/chatclient.js"></script>
+
+</html>

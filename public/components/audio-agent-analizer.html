@@ -1,0 +1,187 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<dom-module id="audio-agent-analizer">
+    <template>
+        <style include="shared-styles-dropdown">
+            :host {
+                width: 100%;
+            }
+
+            nav {
+                display: inline-flex;
+                background-color: #3e4242;
+            }
+
+            article {
+                display: flex;
+                flex-flow: column;
+                padding: 7px;
+            }
+
+            section {
+                display: inline-flex;
+                flex-basis: 100px;
+                border-radius: 4px;
+                box-shadow: 2px 2px 2px #353838;
+            }
+
+            paper-item[sellected] {
+                background-color: chartreuse
+            }
+            @media (min-width: 1300px) {
+                nav {
+                    /* background-color: #eb3aaa;*/
+                    padding-left: 9.7%;
+                }
+            }
+            @media (min-width: 1400px) {
+                nav {
+                /*     background-color: #3a5beb;*/
+                    padding-left: 19.7%;
+                }
+            }
+            @media (min-width: 1550px) {
+                nav {
+                  /*   background-color: #ebad3a;*/
+                    padding-left: 28.7%;
+                }
+            }
+
+              @media (min-width: 1700px) {
+                nav {
+                  /*   background-color: #3a5beb;*/
+                    padding-left: 30.7%;
+                }
+            }
+
+          /*  @media (max-width: 1745px) {
+                nav {
+                     background-color: #e2eb3a;
+                    padding-left: 29.8%;
+                }
+            }*/
+
+            @media (min-width: 1745px) {
+                nav {
+               /*      background-color: #4feb3a;*/
+                    padding-left: 41%;
+                }
+            }
+        </style>
+        <nav>
+            <article>
+                <section>
+                    <canvas id="canvas" width="[[itemWidth]]" height="[[itemHeigt]]"></canvas>
+                </section>
+            </article>
+            <article>
+                <section>
+                    <paper-dropdown-menu class="custom custom3" label="[[value]]">
+                        <paper-listbox id="listBox1" slot="dropdown-content" class="dropdown-content" selected="0">
+                            <template is="dom-repeat" items="{{options}}" as="option" mutable-data="true">
+                                <paper-item on-click="analizer" id="[[option.id]]" value=[[option.name]]>
+                                    [[option.name]]
+                                </paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </section>
+            </article>
+        </nav>
+    </template>
+    <script>
+        class audioAgentAnalizer extends Polymer.Element {
+            static get is() {
+                return 'audio-agent-analizer';
+            }
+            constructor() {
+                super();
+            }
+            ready() {
+                super.ready();
+                let ctx = this.$.canvas.getContext('2d')
+                this.context2d = ctx
+                this.context2d.fillStyle = '#000000'
+                this.context2d.fillRect(0, 0, this.$.canvas.width, this.$.canvas.height)
+            }
+
+            static get properties() {
+                return {
+                    itemWidth: {
+                        type: String
+                    },
+                    itemHeigt: {
+                        type: String
+                    },
+                    context2d: {
+                        type: Object
+                    },
+                    agentClass: {
+                        type: Object,
+                        notify: true
+                    },
+                    value: {
+                        type: String,
+                        value: 'Graphs',
+                        notify: true,
+                    },
+                    options: {
+                        value: [
+                            { id: 'Graphs', name: 'Analizer Graphs' },
+                            { id: 'sineWave', name: 'Sine Wave' },
+                            { id: 'barGraph', name: 'Bar Graph' },
+                            { id: 'bubbleBurst', name: 'Bubble Burst' },
+                        ]
+                    },
+                    sellectedElements: {
+                        type: Object,
+                        value: { item: {} }
+                    }
+                }
+            }
+
+            analizer(event) {
+                let bool = event.model.children[1].hasAttribute('sellected') === true ? false : true
+                let par = Object.keys(this.agentClass.analyserNode)
+                //     console.log( Object.keys(this.sellectedElements.item))
+                if (!this.sellectedElements.item.value) {
+                    if (par[0] !== undefined)
+                        event.model.children[1].setAttribute('sellected', true)
+                    this.sellectedElements.item = event.model.children[1]
+                    this.agentClass[event.model.__data.option.id]((err) => {
+                        if (err) {
+                            throw this.error('analizer', err)
+                        }
+                    }, this.context2d, this.$.canvas.width, this.$.canvas.height, par[0])
+                } else {
+                    console.log('removed')
+                    this.sellectedElements.item.removeAttribute('sellected', true)
+                    this.sellectedElements.item = {}
+                    this.agentClass.killVisual(this.context2d, this.$.canvas.width, this.$.canvas.height)
+                }
+            }
+
+            error(msg, err) {
+                console.error(msg, err);
+            }
+
+            changeToOne(data) {
+                this.value = data.model.__data.option.id
+                setTimeout(() => {
+                    this.value = 'Graphs'
+                }, 100)
+            }
+
+        }
+        window.customElements.define(audioAgentAnalizer.is, audioAgentAnalizer);
+
+    </script>
+</dom-module>

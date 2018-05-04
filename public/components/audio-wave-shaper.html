@@ -1,0 +1,359 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="./audio-functions.html">
+
+<dom-module id="audio-wave-shaper">
+    <template>
+        <style include="shared-styles-typeG">
+            :host {
+                margin-right: var(--app-standart-border-radius);
+            }
+
+            article {
+                box-shadow: var( --app-toolbar-box-shadow);
+                border-radius: var(--app-standart-border-radius);
+                margin-top: 6px;
+                width: 164px;
+                background-color: var(--app-primary-background-color);
+                padding-left: 9px;
+                display: flex;
+                flex-flow: column;
+            }
+
+            span,
+            label[for=range] {
+                color: var(--app-color)
+            }
+            .labelforvol {
+                position: relative;
+                font-weight: 600;
+                left: -3px;
+                color: var(--app-type-labelforvol-color);
+                top: 0px;
+                border-radius: var(--app-standart-border-radius);
+                padding: 3px;
+                font-size: var(--app-type-labelforvol-font-size);
+                text-shadow: var(--app-type-labelforvol-text-shadow);
+            }
+
+             .labelforvol[rEady] {
+                background-color: var(--app-type-labelforvol-Ready-background-color);
+                font-size: var(--app-type-labelforvol-font-size);
+            }
+
+            .labelforvol[waiting] {
+                background-color: var(--app-type-labelforvol-waiting-background-color);
+                font-size: var(--app-type-labelforvol-font-size);
+            }
+
+            .open[open] {
+                height: auto
+            }
+
+            audio {
+                width: 128px
+            }
+
+            paper-icon-button {
+                color: var(--app-color)
+            }
+
+            paper-icon-button {
+                display: none
+            }
+
+            section[list-box-hiden] {
+                display: none
+            }
+
+            section[list-box-hiden][boxShow] {
+                display: block
+            }
+
+            paper-item[sellected] {
+                background-color: chartreuse
+            }            
+
+            .inputin {
+                display: none
+            }
+
+            .inputin aside {
+                position: relative;
+                flex-basis: 84px;
+                top: 9px;
+            }
+
+            aside[apllyWith] {
+                position: relative;
+                top: 1px;
+            }
+
+            .inputin[open] {
+                height: 41px;
+                display: inline-flex;
+                flex-flow: row;
+                color: #000000;
+                font-size: 8px;
+            }
+        </style>
+        <article>
+            <label for="range">[[elemTitle]]
+                <span>[[type]]</span>
+                <button on-click="removeCall"> x </button>
+            </label>
+            <section id="title" class="open" open$="[[!open]]">
+                <label id="frovol" class="labelforvol" for="vol" waiting$="[[waiting]]" rEady$="[[rEady]]">
+                        Distortion Values
+                </label>
+                <paper-item>
+                    <paper-item-body two-line>
+                        <paper-input class="diferent" title="overSample" label="overSample" value="{{overSample}}">
+                        </paper-input>
+                        <paper-input class="diferent" title="amount" label="wave amount" value="{{amount}}">
+                        </paper-input>
+                    </paper-item-body>
+                </paper-item>
+            </section>
+            <section id="title" class="inputin open" open$="[[!open]]">
+                <aside apllyWith>
+                    <paper-menu-button>
+                        <paper-button slot="dropdown-trigger" alt="menu">aplly with</paper-button>
+                        <paper-listbox slot="dropdown-content">
+                            <template id="applyNode" is="dom-repeat" items="{{keys}}" as="key" mutable-data="true">
+                                <paper-item id="apllyNow" on-click="showBox">[[key]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </aside>
+                <aside>
+                        <paper-button id="apllyNow" on-click="apllyNow">aplly now</paper-button>
+                </aside>
+            </section>
+            <section list-box-hiden boxShow$="[[boxShow]]" on-click="hidewBox2">
+                <paper-listbox slot="dropdown-content" multi>
+                    <template is="dom-repeat" items="{{applicables}}" as="applicable" mutable-data="true">
+                        <paper-item on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
+                    </template>
+                </paper-listbox>
+            </section>
+            <div class="open divtitle-area" open$="[[open]]">
+                <section id="title" class="open" open$="[[open]]">
+                    <paper-input class="diferent" id="titleInput" min="0" max="5" step="0.5" label="new title" title="new title" value="{{elemTitle}}">
+                    </paper-input>
+                    <paper-button on-click="submit" raised>aplly title </paper-button>
+                </section>
+            </div>
+        </article>
+    </template>
+    <script>
+        class audioWaveShaper extends Polymer.Element {
+            static get is() {
+                return 'audio-wave-shaper';
+            }
+            constructor() {
+                super();
+            }
+            ready() {
+                super.ready()
+            }
+            static get properties() {
+                return {
+                    contextNode: {
+                        type: Object,
+                        //computed: 'getContextNode(elemTitle)'
+                    },
+                    elemTitle: {
+                        type: String,
+                        notify: true
+                    },
+                    titleFuncion: {
+                        type: String,
+                        notify: true,
+                        value: 'distortion values'
+                    },
+                    type: {
+                        type: String,
+                        value: 'distortion'
+                    },
+                    agentClass: {
+                        type: Object,
+                        notify: true
+                    },
+                    open: {
+                        type: Boolean,
+                        value: true,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    show: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    overSample: {
+                        type: Number,
+                        value: 2
+                    },
+                    amount: {
+                        type: Number,
+                        value: 100
+                    },
+                    keys: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        },
+                        notify: true
+                    },
+                    applicables: {
+                        type: Array,
+                        value: function () {
+                            return []
+                        },
+                        notify: true
+                    },
+                }
+            }
+            applyer() {
+                this.keys = [0]
+                let keys = Object.keys(this.agentClass.applicables)
+                let arr = [], arr2 = []
+                for (let i = 0; i < keys.length; i++) {
+                    if (keys[i] === this.elemTitle && this.agentClass.applicables[keys[i]].arr.length > 1) {
+                        arr.push(keys[i])
+                    }
+                    if (keys[i] !== this.elemTitle) {
+                        arr.push(keys[i])
+                    }
+                }
+                this.keys = arr
+            }
+            setContextNode(elemTitle) {
+                let that = this.agentClass
+                this.contextNode = that.contextNode[elemTitle]
+                console.log(this.contextNode)
+            }
+            showBox(event) {
+                this.boxShow = true
+                this.applicables = [0]
+                let arr2 = []
+                for (let j = 0; j < this.agentClass.applicables[event.model.__data.key].arr.length; j++) {
+                    if (this.agentClass.applicables[event.model.__data.key].arr[j].titleFuncion !== this.titleFuncion) {
+                        arr2.push(this.agentClass.applicables[event.model.__data.key].arr[j])
+                    }
+
+                }
+                this.applicables = arr2
+            }
+
+            hidewBox2(event) {
+                this.boxShow = false
+            }
+
+            hidewBox(event) {
+                this.boxShow = false
+                let bool = event.model.children[1].hasAttribute('sellected') === true ? false : true
+                let name = event.model.__data.applicable.elemTitle + event.model.__data.applicable
+                    .titleFuncion.split(' ').join('').toLocaleUpperCase()
+                if (bool === true) { 
+                    this.agentClass.setAppliesWith((err)=>{
+                        event.model.children[1].setAttribute('sellected', true)
+                    },{ elemTitle: name, elem: this.$.apllyNow, titleFuncion: this.titleFuncion })
+                }
+                if (bool === false) {
+                    console.log(event.model.__data.applicable.elemTitle, name, event.model.children[1])
+                    event.model.children[1].removeAttribute('sellected', true)
+                    this.agentClass.revoveAppliesWith((err) => {
+                        if (err) console.error(err)
+                    }, name, this.titleFuncion)
+                }
+            }
+
+            removeCall() {
+                if (this.open === false) {
+                    this.agentClass.revoveElemTitle(() => {
+                       window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                        window.dispatchEvent(new CustomEvent('apllywith', {}))
+                        delete this.agentClass.contextNode[this.elemTitle]
+                        this.parentElement.removeChild(this)
+                    }, this.elemTitle)
+
+                } else {
+                    alert('insert tytle to remove item')
+                }
+            }
+
+            submit(event) {
+                if (this.$.titleInput.value.length > 0) {
+                    this.elemTitle = this.elemTitle.split(' ').join('');
+                    this.agentClass.waveShaper((error) => {
+                        if (!error) {
+                            window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                            window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
+                            this.setContextNode(this.elemTitle)
+                            this.agentClass.setApplicable(() => {
+                                window.addEventListener('apllywith', (event) => {
+                                    this.applyer()
+                                }, false)
+                                window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                            }, { elemTitle: this.elemTitle, arr: [{ elemTitle: this.elemTitle, elem: this.$.apllyNow, titleFuncion: this.titleFuncion }] })
+                            this.open = false
+                            this.show = true
+                        } else {
+                            this.$.titleInput.value = error
+                            setTimeout(() => {
+                                this.$.titleInput.value = ''
+                            }, 1000)
+                        }
+                    }, this.elemTitle, this.overSample, this.amount)
+                }
+            }
+
+            apllyNow() {
+                let that = this.agentClass
+                this.$.frovol.innerHTML = 'Waitng...'
+                this.waiting = true
+                let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
+                that.setAgentParamTo((err) => {
+                    if (!err) {
+                        if (that.appliesWith[name]) {
+                            for (let i = 0; i < that.appliesWith[name].length; i++) {
+                                that.appliesWith[name][i].elem.click()
+                            }
+                        }
+                        setTimeout(() => {
+                            this.waiting = !this.waiting
+                            this.$.frovol.innerHTML = 'ready...'
+                            this.waiting = false
+                            this.rEady = true
+                        }, 500)
+                        setTimeout(() => {
+                            this.$.frovol.innerHTML = this.titleFuncion
+                            this.rEady = false
+                        }, 1500)
+                    } else {
+                        console.error(err)
+                        this.$.frovol.innerHTML = 'Something Went Wrong...'
+                        this.waiting = true
+                        setTimeout(() => {
+                            this.$.frovol.innerHTML = this.titleFuncion
+                            this.waiting = false
+                        }, 3000)
+                    }
+                }, this.contextNode, 'overSample', 'curve', this.overSample + 'x', this.amount)
+            }
+        }
+        window.customElements.define(audioWaveShaper.is, audioWaveShaper);
+
+    </script>
+</dom-module>
