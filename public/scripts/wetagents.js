@@ -29,34 +29,34 @@ class WetAgents {
         }
     }
 
-    setStreamDestination(done, streamName) {
+    setStreamDestination(done, streamName, contextNode) {
         try {
             if (this.streamNode[streamName] === undefined &&
-                this.sourceNode[streamName] === undefined &&
-                this.contextNode[streamName] === undefined &&
                 streamName) {
-                let stream = this.context.createMediaStreamDestination();
-                console.log('got here')
-                this.streamNode[streamName] = stream
-                done(false, stream.stream)
-                return
+                this.streamNode[streamName] = this.context[contextNode]()
+                done(false, this.streamNode[streamName])
             } else {
                 done(sourceName + ' already exists or no argumet value!!')
-                return
             }
         } catch (err) {
             done(err)
         }
-
     }
 
-    gain(done, gainNode, value, timeout) {
+    gain(done, gainNode, destination) {
         try {
             if (this.sourceNode[gainNode] === undefined &&
                 this.contextNode[gainNode] === undefined &&
                 gainNode) {
-                this.contextNode[gainNode] = this.context.createGain()
-                done()
+                if (destination !== true) {
+                    this.contextNode[gainNode] = this.context.createGain()
+                    done()
+                } else {
+                    this.setStreamDestination((state, node) => {
+                        done(state, node)
+                    }, gainNode, 'createGain')
+                }
+
             } else {
                 done()
             }
@@ -65,6 +65,7 @@ class WetAgents {
             throw new Error(err);
         }
     }
+
     waveShaper(done, waveName, overS, amount) {  //, distortionCurve) {
         try {
             if (this.sourceNode[waveName] === undefined &&
@@ -84,7 +85,6 @@ class WetAgents {
     }
 
     makeDistortionCurve(amount) {
-        console.log(typeof amount === 'number')
         var k = typeof amount === 'number' ? amount : 50,
             n_samples = 44100,
             curve = new Float32Array(n_samples),
@@ -101,11 +101,9 @@ class WetAgents {
     connectAgents(done, agent1, agent2, connect) {
         try {
             if (connect == true) {
-                console.log('connect', agent1, agent2)
                 agent1.connect(agent2)
                 agent2.connected = agent1
             } else {
-                console.log('disconnect', agent1, agent2)
                 agent1.disconnect(agent2)
                 agent2.connected = false
             }
@@ -119,12 +117,10 @@ class WetAgents {
         try {
             if (param1 !== 'overSample') {
                 agent[param1][param2](to, this.context.currentTime + to1, to2)
-                console.log('setAgentParamTo', agent, param1, param2, to, to1, to2)
                 done()
             } else {
                 agent[param1] = to
                 agent[param2] = param2 === 'curve' ? this.makeDistortionCurve(parseInt(to1)) : to1
-                console.log('setAgentParamTo', agent, param1, param2, to, to1)
                 done()
             }
             agent.changed = true
@@ -137,38 +133,39 @@ class WetAgents {
     setApplicable(done, obj) {
         if (!this.applicables[obj.elemTitle]) {
             this.applicables[obj.elemTitle] = obj
+            ///   
+            console.log('create', this.applicables[obj.elemTitle])
         } else {
             this.applicables[obj.elemTitle].arr.push(obj.arr[0])
+            console.log('add', this.applicables[obj.elemTitle])
         }
         done()
     }
 
-    setAppliesWith(done, obj) {
-        if (!this.appliesWith[obj.elemTitle]) {
-            this.appliesWith[obj.elemTitle] = new Array(obj)
+    setAppliesWith(done, obj, rec) {
+        if (!this.appliesWith[obj.name]) {
+            this.appliesWith[obj.name] = new Array(obj)
         } else {
-            let arr = this.appliesWith[obj.elemTitle]
+            let arr = this.appliesWith[obj.name]
             arr.push(obj)
-            this.applicables[obj.elemTitle] = arr
+            this.appliesWith[obj.name] = arr
         }
         done()
+
     }
 
-    revoveAppliesWith(done, elemTitle, titleFunction) {
+    revoveAppliesWith(done, obj) {
         let arr1 = []
-        // console.log(this.appliesWith, elemTitle)
-        for (let i = 0; i < this.appliesWith[elemTitle].length; i++) {
-            console.log('removing', this.appliesWith[elemTitle][i].titleFuncion, titleFunction)
-            if (this.appliesWith[elemTitle][i].titleFuncion !== titleFunction) {
-                arr1.push(this.appliesWith[elemTitle][i])
+        for (let i = 0; i < this.appliesWith[obj.name].length; i++) {
+            if (this.appliesWith[obj.name][i].titleFuncion !== obj.titleFuncion) {
+                arr1.push(this.appliesWith[obj.name][i])
             }
         }
-        this.appliesWith[elemTitle] = arr1
+        this.appliesWith[obj.name] = arr1
         done()
     }
-    // what is revove..? lol! dam it...!! not changing it.
+
     revoveElemTitle(done, elemTitle) {
-        console.log(this.appliesWith, this.applicables, elemTitle)
         if (this.applicables[elemTitle]) {
             delete this.appliesWith[elemTitle]
             delete this.applicables[elemTitle]
@@ -190,11 +187,9 @@ class WetAgents {
     revoveFunction(done, elemTitle, titleFunction) {
         if (this.appliesWith[elemTitle]) {
             this.revoveAppliesWith(() => {
-                console.info('removal', titleFunction)
             }, elemTitle, titleFunction)
         }
         this.revoveApplicables(() => {
-            console.info('removal', titleFunction)
         }, elemTitle, titleFunction)
         done()
     }
@@ -203,7 +198,6 @@ class WetAgents {
     analyser(done, nodename) {
         try {
             if (!this.analyserNode[nodename] && nodename) {
-                console.log(nodename)
                 this.analyserNode[nodename] = this.context.createAnalyser();
                 this.analyserNode[nodename].minDecibels = -90;
                 this.analyserNode[nodename].maxDecibels = -10;
@@ -218,7 +212,6 @@ class WetAgents {
     }
 
     sineWave(done, canvasCtx, width, height, nodename) {
-        // console.log(nodename)
         try {
             if (this.analyserNode[nodename] && nodename) {
                 const WIDTH = width;
@@ -226,7 +219,6 @@ class WetAgents {
                 var drawVisual
                 this.analyserNode[nodename].fftSize = 2048;
                 var bufferLength = this.analyserNode[nodename].fftSize;
-                //  console.log(bufferLength, WIDTH, HEIGHT);
                 var dataArray = new Uint8Array(bufferLength);
                 canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
@@ -256,7 +248,6 @@ class WetAgents {
 
                     canvasCtx.lineTo(WIDTH, HEIGHT / 2);
                     canvasCtx.stroke();
-                    //   console.log('did it', dataArray)
                 }
                 done()
                 draw();
@@ -364,7 +355,6 @@ class WetAgents {
 
                 var drawAlt = () => {
                     this.drawVisual = requestAnimationFrame(drawAlt);
-                    //  analyser.getByteTimeDomainData(dataArrayAlt);
                     this.analyserNode[nodename].getByteFrequencyData(dataArrayAlt);
 
                     canvasCtx.fillStyle = 'rgb(0, 0, 0)';
@@ -376,8 +366,6 @@ class WetAgents {
 
                     this.bars(canvasCtx, dataArrayAlt, bufferLengthAlt, barWidth, barHeight, HEIGHT)
                     this.circles(canvasCtx, dataArrayAlt, bufferLengthAlt, stdSize2, barHeight, barWidth, HEIGHT, true, 0, 0)
-                    //cicles(canvasCtx, dataArrayBubl, bufferLengthAlt, stdSize2, barHeight, barWidth, HEIGHT, true, 0, 0)
-                    //cicles(canvasCtx, dataArrayAlt, bufferLengthAlt, stdSize3, barHeight, barWidth, HEIGHT)
                 };
                 drawAlt();
                 done()
@@ -410,9 +398,6 @@ class WetAgents {
     }
 
     //methods not applyed yet\\
-
-
-
     constantSource(stream) {
         this.source = this.context.createConstantSource(stream);
         try {

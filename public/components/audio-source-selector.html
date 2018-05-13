@@ -83,7 +83,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
             dataChanged(data) {
-                console.log(data.model.__data.option.id)
+            //    console.log(data.model.__data.option.id)
                 this.value = data.model.__data.option.id
                 if (data.model.__data.option.id !== 'sources')
                     setTimeout(() => { this.$.listBox2.__data.items[0].click() }, 100)

@@ -13,97 +13,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="audio-wave-shaper">
     <template>
         <style include="shared-styles-typeG">
-            :host {
-                margin-right: var(--app-standart-border-radius);
-            }
-
-            article {
-                box-shadow: var( --app-toolbar-box-shadow);
-                border-radius: var(--app-standart-border-radius);
-                margin-top: 6px;
-                width: 164px;
-                background-color: var(--app-primary-background-color);
-                padding-left: 9px;
-                display: flex;
-                flex-flow: column;
-            }
-
-            span,
-            label[for=range] {
-                color: var(--app-color)
-            }
-            .labelforvol {
-                position: relative;
-                font-weight: 600;
-                left: -3px;
-                color: var(--app-type-labelforvol-color);
-                top: 0px;
-                border-radius: var(--app-standart-border-radius);
-                padding: 3px;
-                font-size: var(--app-type-labelforvol-font-size);
-                text-shadow: var(--app-type-labelforvol-text-shadow);
-            }
-
-             .labelforvol[rEady] {
-                background-color: var(--app-type-labelforvol-Ready-background-color);
-                font-size: var(--app-type-labelforvol-font-size);
-            }
-
-            .labelforvol[waiting] {
-                background-color: var(--app-type-labelforvol-waiting-background-color);
-                font-size: var(--app-type-labelforvol-font-size);
-            }
-
-            .open[open] {
-                height: auto
-            }
-
-            audio {
-                width: 128px
-            }
-
-            paper-icon-button {
-                color: var(--app-color)
-            }
-
-            paper-icon-button {
-                display: none
-            }
-
-            section[list-box-hiden] {
-                display: none
-            }
-
-            section[list-box-hiden][boxShow] {
-                display: block
-            }
-
-            paper-item[sellected] {
-                background-color: chartreuse
-            }            
-
-            .inputin {
-                display: none
-            }
-
-            .inputin aside {
-                position: relative;
-                flex-basis: 84px;
-                top: 9px;
-            }
-
-            aside[apllyWith] {
-                position: relative;
-                top: 1px;
-            }
-
-            .inputin[open] {
-                height: 41px;
-                display: inline-flex;
-                flex-flow: row;
-                color: #000000;
-                font-size: 8px;
-            }
+            :host { margin-right: var(--app-standart-border-radius); } article { box-shadow: var( --app-toolbar-box-shadow); border-radius:
+            var(--app-standart-border-radius); margin-top: 6px; width: 164px; background-color: var(--app-primary-background-color);
+            padding-left: 9px; display: flex; flex-flow: column; } span, label[for=range] { color: var(--app-color) } .labelforvol
+            { position: relative; font-weight: 600; left: -3px; color: var(--app-type-labelforvol-color); top: 0px; border-radius:
+            var(--app-standart-border-radius); padding: 3px; font-size: var(--app-type-labelforvol-font-size); text-shadow:
+            var(--app-type-labelforvol-text-shadow); } .labelforvol[rEady] { background-color: var(--app-type-labelforvol-Ready-background-color);
+            font-size: var(--app-type-labelforvol-font-size); } .labelforvol[waiting] { background-color: var(--app-type-labelforvol-waiting-background-color);
+            font-size: var(--app-type-labelforvol-font-size); } .open[open] { height: auto } audio { width: 128px } paper-icon-button
+            { color: var(--app-color) } paper-icon-button { display: none } section[list-box-hiden] { display: none } section[list-box-hiden][boxShow]
+            { display: block } paper-item[sellected] { background-color: chartreuse } .inputin { display: none } .inputin
+            aside { position: relative; flex-basis: 84px; top: 9px; } aside[apllyWith] { position: relative; top: 1px; }
+            .inputin[open] { height: 41px; display: inline-flex; flex-flow: row; color: #000000; font-size: 8px; }
         </style>
         <article>
             <label for="range">[[elemTitle]]
@@ -112,7 +33,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </label>
             <section id="title" class="open" open$="[[!open]]">
                 <label id="frovol" class="labelforvol" for="vol" waiting$="[[waiting]]" rEady$="[[rEady]]">
-                        Distortion Values
+                    Distortion Values
                 </label>
                 <paper-item>
                     <paper-item-body two-line>
@@ -135,13 +56,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </paper-menu-button>
                 </aside>
                 <aside>
-                        <paper-button id="apllyNow" on-click="apllyNow">aplly now</paper-button>
+                    <paper-button id="apllyNow" on-click="apllyNow">aplly now</paper-button>
                 </aside>
             </section>
             <section list-box-hiden boxShow$="[[boxShow]]" on-click="hidewBox2">
-                <paper-listbox slot="dropdown-content" multi>
+                <paper-listbox id="listBox" slot="dropdown-content" multi>
                     <template is="dom-repeat" items="{{applicables}}" as="applicable" mutable-data="true">
-                        <paper-item on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
+                        <paper-item id='[[applicable.name]]' on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
                     </template>
                 </paper-listbox>
             </section>
@@ -164,6 +85,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             ready() {
                 super.ready()
+                window.addEventListener('apllywith', (event) => {
+                    this.applyer()
+                }, false)
             }
             static get properties() {
                 return {
@@ -183,6 +107,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     type: {
                         type: String,
                         value: 'distortion'
+                    },
+                    sellected: {
+                        type: Array,
+                        value: []
                     },
                     agentClass: {
                         type: Object,
@@ -238,51 +166,103 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
                 this.keys = arr
             }
+
             setContextNode(elemTitle) {
                 let that = this.agentClass
                 this.contextNode = that.contextNode[elemTitle]
-                console.log(this.contextNode)
+                //  console.log(this.contextNode)
             }
+
             showBox(event) {
                 this.boxShow = true
                 this.applicables = [0]
                 let arr2 = []
+                let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
                 for (let j = 0; j < this.agentClass.applicables[event.model.__data.key].arr.length; j++) {
-                    if (this.agentClass.applicables[event.model.__data.key].arr[j].titleFuncion !== this.titleFuncion) {
+                    if (this.agentClass.applicables[event.model.__data.key].arr[j].name !== name) {
                         arr2.push(this.agentClass.applicables[event.model.__data.key].arr[j])
                     }
-
                 }
                 this.applicables = arr2
+                setTimeout(() => {
+                    this.shouldSellect(this.sellected, this.applicables)
+                }, 25)
+            }
+
+            shouldSellect(arr1, arr2) {
+                let itIs = []
+                arr1.map(item => {
+                    for (let i = 0; i < arr2.length; i++) {
+                        if (item.name === arr2[i].name) {
+                            this.sellect(this.$.listBox.children, arr2[i].name)
+                        }
+                        if (item.name !== arr2[i].name) {
+                            this.unSellect(this.$.listBox.children, arr2[i].name)
+                        }
+                    }
+                })
             }
 
             hidewBox2(event) {
                 this.boxShow = false
             }
 
+            sellect(elem, name) {
+                if (name === undefined) {
+                    elem.setAttribute('sellected', true)
+                    console.log('sellected', elem[name], name)
+                } else {
+                    elem[name].setAttribute('sellected', true)
+                }
+            }
+
+            unSellect(elem, name) {
+                if (name === undefined) {
+                    elem.removeAttribute('sellected', true)
+                    console.log('sellected', elem[name], name)
+                } else {
+                    elem[name].removeAttribute('sellected', true)
+                }
+            }
+            popFromArray(item) {
+                let arr = []
+                for (let i = 0; i < this.sellected.length; i++) {
+                    if (this.sellected[i].name !== item) {
+                        arr.push(this.sellected[i])
+                    }
+                }
+                this.sellected = arr
+                console.log('popfrom', this.sellected, arr)
+            }
             hidewBox(event) {
                 this.boxShow = false
                 let bool = event.model.children[1].hasAttribute('sellected') === true ? false : true
-                let name = event.model.__data.applicable.elemTitle + event.model.__data.applicable
-                    .titleFuncion.split(' ').join('').toLocaleUpperCase()
-                if (bool === true) { 
-                    this.agentClass.setAppliesWith((err)=>{
-                        event.model.children[1].setAttribute('sellected', true)
-                    },{ elemTitle: name, elem: this.$.apllyNow, titleFuncion: this.titleFuncion })
+                let name = event.model.__data.applicable.elemTitle + event.model.__data.applicable.titleFuncion.split(' ').join('').toLocaleUpperCase()
+                if (bool === true) {
+                    this.agentClass.setAppliesWith((err) => {
+                        if (event.model.children[1].innerHTML === event.model.__data.applicable.titleFuncion) {
+                            console.log('sellected here now..!', event.model.children[1].innerHTML, event.model.__data.applicable.titleFuncion)
+                            this.sellected.push({ name: name, sellected: true })
+                            this.sellect(event.model.children[1])
+                            console.log('pusheed..!', this.sellected)
+                        }
+                    }, { elemTitle: this.elemTitle, name: name, elem: this.$.apllyNow, titleFuncion: this.titleFuncion, sellected: true })
+                    // console.log(event.model.children[1], name, this.titleFuncion, event)
                 }
                 if (bool === false) {
-                    console.log(event.model.__data.applicable.elemTitle, name, event.model.children[1])
-                    event.model.children[1].removeAttribute('sellected', true)
                     this.agentClass.revoveAppliesWith((err) => {
                         if (err) console.error(err)
-                    }, name, this.titleFuncion)
+                        //    console.log(bool)
+                        this.popFromArray(name)
+                        this.unSellect(event.model.children[1])
+                    }, { elemTitle: this.elemTitle, name: name, titleFuncion: this.titleFuncion, sellected: false })
                 }
             }
 
             removeCall() {
                 if (this.open === false) {
                     this.agentClass.revoveElemTitle(() => {
-                       window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                        window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
                         window.dispatchEvent(new CustomEvent('apllywith', {}))
                         delete this.agentClass.contextNode[this.elemTitle]
                         this.parentElement.removeChild(this)
@@ -301,12 +281,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
                             window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
                             this.setContextNode(this.elemTitle)
+                            let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
                             this.agentClass.setApplicable(() => {
+                                //     console.log('typeFuncion', this.typeFuncion)
                                 window.addEventListener('apllywith', (event) => {
                                     this.applyer()
                                 }, false)
                                 window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                            }, { elemTitle: this.elemTitle, arr: [{ elemTitle: this.elemTitle, elem: this.$.apllyNow, titleFuncion: this.titleFuncion }] })
+                            }, {
+                                    elemTitle: this.elemTitle,
+                                    arr: [{
+                                        elemTitle: this.elemTitle,
+                                        titleFuncion: this.titleFuncion,
+                                        name: name
+                                    }]
+                                })
                             this.open = false
                             this.show = true
                         } else {

@@ -17,13 +17,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             { color: var(--app-color) } .open[open] { height: auto } audio { width: 128px } paper-icon-button { color: var(--app-color)
             } paper-icon-button[record] { display: block } paper-icon-button { display: none } .red { color: var(--app-color-3)
             } .red[paused] { color: initial } section[list-box-hiden] { display: none } section[list-box-hiden][boxShow]
-            { display: block } paper-item[sellected] { background-color: chartreuse } paper-button { font-size: var(--app-type-button-font-size);
-            } aside[apllyWith] { border-top: 0.4px solid #b6b6b6b3 } paper-icon-button[icon="eject"] { transform: rotate(90deg)
-            } paper-icon-button[icon="av:play-arrow"][play] { background-color: var(--app-type-sellected-background-color)
-            } paper-icon-button[pause] { display: none } paper-icon-button[icon="query-builder"] { display: block }
+            { display: block } paper-button { font-size: var(--app-type-button-font-size); } aside[apllyWith] { border-top:
+            0.4px solid #b6b6b6b3 } paper-icon-button[play] { display: block; color: var(--app-type-sellected-background-color)
+            } paper-icon-button[disable] { display: block; color: #b6b6b6b3 } paper-item[sellected] { background-color: chartreuse
+            } paper-icon-button[pause] { display: none } paper-icon-button[icon="query-builder"] { display: block } #progress
+            { background-color: transparent; height: 0px; width: 0px } #progress[progress] { background-color: rgb(255, 0,
+            0); height: 1px; }
         </style>
-        <app-location route="{{route}}"></app-location>
-        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}" query-params="{{query}}"></app-route>
         <article>
             <label for="range">[[elemTitle]]
                 <span>[[type]]</span>
@@ -43,36 +43,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <paper-item>
                         <paper-item-body two-line>
                         </paper-item-body>
-                        <paper-icon-button on-click="toggleRecording" icon="radio-button-checked" class="red" record$="[[record]]" paused$="[[paused]]"
-                            title="toggle recording">
+                        <paper-icon-button id="apllyNow" on-click="toggleRecording" icon="radio-button-checked" class="red" record$="[[record]]"
+                            paused$="[[paused]]" title="toggle recording">
                         </paper-icon-button>
-                        <paper-icon-button on-click="toggleRecording" icon="radio-button-unchecked" record$="[[!record]]" title="toggle recording">
+                        <paper-icon-button id="apllyNow" on-click="toggleRecording" icon="radio-button-unchecked" record$="[[!record]]" title="toggle recording">
                         </paper-icon-button>
-                        <paper-icon-button on-click="toggleRecordingPause" icon="av:pause" record$="[[record]]" pause$="[[!pause]]" title="toggle pause">
+                        <paper-icon-button icon="av:play-arrow" record$="[[record]]" disable$="[[disable]]" title="play recorded - opens new File Source">
                         </paper-icon-button>
-                        <paper-icon-button on-click="toggleRecordingPause" icon="eject" record$="[[record]]" pause$="[[pause]]" title="toggle pause">
+                        <paper-icon-button icon="file-download" record$="[[record]]" disable$="[[disable]]" title="play recorded - opens new File Source">
                         </paper-icon-button>
-                        <paper-icon-button on-click="playRecording" icon="av:play-arrow" record$="[[!record]]" play$="[[play]]" title="play recorded - opens new File Source">
+                        <paper-icon-button on-click="playRecording" icon="av:play-arrow" play$="[[play]]" title="play recorded - opens new File Source">
                         </paper-icon-button>
-                        <paper-icon-button on-click="downloadRecording" icon="file-download" record$="[[!record]]" play$="[[play]]" title="play recorded - opens new File Source">
+                        <paper-icon-button on-click="downloadRecording" icon="file-download" play$="[[play]]" title="play recorded - opens new File Source">
                         </paper-icon-button>
                     </paper-item>
                 </aside>
+                <div id="progress" progress$="[[progress]]"></div>
                 <aside apllyWith>
                     <paper-menu-button>
                         <paper-button slot="dropdown-trigger" alt="menu">aplly with</paper-button>
                         <paper-listbox slot="dropdown-content">
                             <template id="applyNode" is="dom-repeat" items="{{keys}}" as="key" mutable-data="true">
-                                <paper-item id="apllyNow" on-click="showBox">[[key]]</paper-item>
+                                <paper-item on-click="showBox">[[key]]</paper-item>
                             </template>
                         </paper-listbox>
                     </paper-menu-button>
                 </aside>
             </section>
             <section list-box-hiden boxShow$="[[boxShow]]" on-click="hidewBox2">
-                <paper-listbox slot="dropdown-content" multi>
+                <paper-listbox id="listBox" slot="dropdown-content" multi>
                     <template is="dom-repeat" items="{{applicables}}" as="applicable" mutable-data="true">
-                        <paper-item on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
+                        <paper-item id='[[applicable.name]]' on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
                     </template>
                 </paper-listbox>
             </section>
@@ -86,6 +87,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </article>
     </template>
     <script>
+        const options = {
+            timeLimit: 300, //timeLimit * 60,
+            encodeAfterRecord: true,
+            progressInterval: 1000, //progressInterval * 1000,
+            ogg: {
+                quality: 0.4
+            },
+            mp3: {
+                bitRate: 128
+            }
+        }
+
         class audioRecorder extends Polymer.Element {
             static get is() {
                 return 'audio-recorder';
@@ -98,6 +111,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 window.addEventListener('apllywith', (event) => {
                     this.applyer()
                 }, false)
+                window.addEventListener('connected', (event) => {
+                    if (this.elemTitle === event.detail.connected) {
+                        this.connected = event.detail.state
+                        console.log(this.connected)
+                        if (this.record === true && this.connected === false) {
+                            this.cancelRecording()
+                        }
+                    }
+                }, false)
             }
             static get properties() {
                 return {
@@ -106,14 +128,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: true
                     },
                     Elapsed: {
-                        type: String
+                        type: String,
+                        value: '00:00'
                     },
                     elapAnimation: {
                         type: Number
                     },
                     state: {
                         type: String,
-                        value: 'inactive'
+                        value: 'inactive...'
+                    },
+                    disable: {
+                        type: Boolean,
+                        value: true,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    progress: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    play: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
                     },
                     boxShow: {
                         type: Boolean,
@@ -139,9 +180,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         value: 'Destination'
                     },
-                    promisse: {
-                        type: Boolean,
-                        value: undefined
+                    sellected: {
+                        type: Array,
+                        value: []
                     },
                     elemTitle: {
                         type: String
@@ -152,10 +193,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     },
                     agentClass: {
                         type: Object
-                    },
-                    gUM: {
-                        type: Object,
-                        computed: 'gUMStart(agentClass)'
                     },
                     constraints: {
                         type: Object,
@@ -188,8 +225,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         reflectToAttribute: true
                     },
                     count: {
-                        type: Number,
-                        value: 0
+                        type: Number
                     },
                     recorder: {
                         type: Object
@@ -202,24 +238,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Boolean,
                         value: false
                     },
+                    progressTime: {
+                        type: Boolean,
+                        value: false
+                    },
                     blob: {
                         type: Object
                     },
                     blob2: {
                         type: Object
                     }
-                }
-            }
-
-            static get observers() {
-                return [
-                    '_routePageChanged(routeData)'
-                ]
-            }
-
-            _routePageChanged(routeData) {
-                if (routeData.page === 'apllywith') {
-                    this.applyer()
                 }
             }
 
@@ -235,7 +263,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         arr.push(keys[i])
                     }
                 }
-                console.log('apllied')
+                //  console.log('apllied')
                 this.keys = arr
             }
 
@@ -243,41 +271,99 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.boxShow = true
                 this.applicables = [0]
                 let arr2 = []
+                let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
                 for (let j = 0; j < this.agentClass.applicables[event.model.__data.key].arr.length; j++) {
-                    if (this.agentClass.applicables[event.model.__data.key].arr[j].titleFuncion !== this.titleFuncion) {
+                    if (this.agentClass.applicables[event.model.__data.key].arr[j].name !== name) {
                         arr2.push(this.agentClass.applicables[event.model.__data.key].arr[j])
                     }
-
                 }
                 this.applicables = arr2
+                setTimeout(() => {
+                    this.shouldSellect(this.sellected, this.applicables)
+                }, 25)
+            }
+
+            shouldSellect(arr1, arr2) {
+                let itIs = []
+                console.log('shouldSellect', arr1, arr2)
+                arr1.map(item => {
+                    for (let i = 0; i < arr2.length; i++) {
+                        if (item.name === arr2[i].name) {
+                            this.sellect(this.$.listBox.children, arr2[i].name)
+                        }
+                        if (item.name !== arr2[i].name) {
+                            this.unSellect(this.$.listBox.children, arr2[i].name)
+                        }
+                    }
+                })
             }
 
             hidewBox2(event) {
                 this.boxShow = false
             }
 
-            hidewBox(event) {
-                this.boxShow = false
-                let bool = event.model.children[1].hasAttribute('sellected') === true ? false : true
-                let name = event.model.__data.applicable.elemTitle + event.model.__data.applicable
-                    .titleFuncion.split(' ').join('').toLocaleUpperCase()
-                if (bool === true) {
-                    this.agentClass.setAppliesWith((err) => {
-                        event.model.children[1].setAttribute('sellected', true)
-                    }, { elemTitle: event.model.__data.applicable.titleFuncion, elem: this.$.apllyNow, titleFuncion: this.titleFuncion })
-                }
-                if (bool === false) {
-                    event.model.children[1].removeAttribute('sellected', true)
-                    this.agentClass.revoveAppliesWith((err) => {
-                        if (err) console.error(err)
-                    }, event.model.__data.applicable.titleFuncion, this.titleFuncion)
+            sellect(elem, name) {
+                if (name === undefined) {
+                    elem.setAttribute('sellected', true)
+                    console.log('sellected', elem[name], name)
+                } else {
+                    elem[name].setAttribute('sellected', true)
+                    console.log('sellected', elem[name], name)
                 }
             }
 
-            timeupdate(event) {
-                // console.log(event)
-                let timeupdate = this.timeView === true ? ('' + event.timeStamp).split('.')[0] : event.timecode
-                this.Elapsed = timeupdate.toString()
+            unSellect(elem, name) {
+                if (name === undefined) {
+                    elem.removeAttribute('sellected', true)
+                    console.log('unsellected', elem[name], name)
+                } else {
+                    elem[name].removeAttribute('sellected', true)
+                    console.log('unsellected', elem[name], name)
+                }
+            }
+            popFromArray(item) {
+                let arr = []
+                for (let i = 0; i < this.sellected.length; i++) {
+                    if (this.sellected[i].name !== item) {
+                        arr.push(this.sellected[i])
+                    }
+                }
+                this.sellected = arr
+                console.log('popfrom', this.sellected, arr)
+            }
+            hidewBox(event) {
+                this.boxShow = false
+                let bool = event.model.children[1].hasAttribute('sellected') === true ? false : true
+                let name = event.model.__data.applicable.elemTitle + event.model.__data.applicable.titleFuncion.split(' ').join('').toLocaleUpperCase()
+                if (bool === true) {
+                    this.agentClass.setAppliesWith((err) => {
+                        if (event.model.children[1].innerHTML === event.model.__data.applicable.titleFuncion) {
+                            console.log('sellected here now..!', event.model.children[1].innerHTML, event.model.__data.applicable.titleFuncion)
+                            this.sellected.push({ name: name, sellected: true })
+                            this.sellect(event.model.children[1])
+                            console.log('pusheed..!', this.sellected)
+                        }
+                    }, { elemTitle: this.elemTitle, name: name, elem: this.$.apllyNow, titleFuncion: this.titleFuncion, sellected: true })
+                    // console.log(event.model.children[1], name, this.titleFuncion, event)
+                }
+                if (bool === false) {
+                    this.agentClass.revoveAppliesWith((err) => {
+                        if (err) console.error(err)
+                        //    console.log(bool)
+                        this.popFromArray(name)
+                        this.unSellect(event.model.children[1])
+                    }, { elemTitle: this.elemTitle, name: name, titleFuncion: this.titleFuncion, sellected: false })
+                }
+            }
+
+            _minSecStr(n) {
+                return (n < 10 ? "0" : "") + n;
+            };
+
+            timeupdate(time) {
+                let timeUpdate = time | 0
+                timeUpdate = (this._minSecStr(timeUpdate / 60 | 0)) + ":" + (this._minSecStr(timeUpdate % 60))
+                this.Elapsed = timeUpdate
             }
 
             toggleTimeView() {
@@ -288,52 +374,116 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.record = !this.record
                 if (this.recorder && this.record === true) {
                     let that = this.agentClass
-                    this.waiting = true
+                    this.disable = true
+                    this.play = false
                     let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
+                    var inter = setInterval(() => {
+                        if (this.kill == true) {
+                            clearInterval(inter)
+                            this.kill = false
+                        } else {
+                            this.paused = !this.paused
+                            this._hasRecordingStarted(that, name)
+                        }
+                    }, 500)
+
+                    this.recorder.onError = this.error
+                    this.recorder.onComplete = (this.handleStop).bind(this);
+                    this.recorder.onEncodingProgress = (this.setProgress).bind(this);
+                    this.recorder.onEncodingCanceled = (this.cancelRecording).bind(this)
+                    this.recorder.onTimeout = (this.handleStop).bind(this);
+
+                    this.recorder.setOptions(options);
+                    this.recorder.startRecording();
+                } else {
+                    if (this.disable === true) {
+                        this.recorder.finishRecording()
+                        this.state = 'inactive...'
+                        this.Elapsed = '00:00'
+                    } else {
+                        this.cancelRecording();
+                    }
+                }
+            }
+
+            _hasRecordingStarted(that, name) {
+                //  console.log(this.recorder.isRecording())
+                if (this.recorder.isRecording() === true && this.connected === true) {
+                    this.paused = false
+                    this.kill = true
+                    this.record = true
+                    this.state = 'recording...'
+                    this.__startTime()
+                    this.play = false
                     if (that.appliesWith[name]) {
                         for (let i = 0; i < that.appliesWith[name].length; i++) {
                             that.appliesWith[name][i].elem.click()
                         }
                     }
-                    var inter = setInterval(() => {
-                        this.paused = !this.paused
-                        this.state = 'no connection...!'
-                        if (this.kill == true) {
-                            clearInterval(inter)
-                            this.state = this.recorder.state
-                        }
-                    }, 500)
-                    this.recorder.onstop = (this.handleStop).bind(this);
-                    this.recorder.start(1000);
-                    this.recorder.ondataavailable = event => {
-                        this.paused = false
-                        this.kill = true
-                        this.timeupdate(event)
-                        if (event.data && event.data.size > 0) {
-                            this.recordedAudio.push(event.data);
-                        }
-                    };
-                    this.state = this.recorder.state
                 } else {
-                    this.recorder.stop(1000)
-                    this.state = this.recorder.state
+                    // this.paused = true
+                    this.state = 'connecting...!'
+                    this.Elapsed = 'no connection'
                 }
+            }
+            __startTime() {
+                var inter = setInterval(() => {
+                    if (this.kill == true) {
+                        clearInterval(inter)
+                        this.kill = false
+                    } else {
+                        this.timeupdate(this.recorder.recordingTime())
+                    }
+                }, 500)
+            }
+
+            setProgress(recorder, progress) {
+                var percent;
+                this.progress = true
+                this.kill = true
+                percent = (progress * 100).toFixed(1) + "%";
+                //  console.log(percent, this.$.progress)
+                this.state = 'encoding...'
+                this.Elapsed = percent
+                this.$.progress.style.width = percent
+                setTimeout(() => {
+                    if ((progress * 100) === 100) {
+                        this.progress = false
+                        this.disable = false
+                        this.play = true
+                        this.state = 'Play/Download'
+                        this.Elapsed = 'done...'
+                        setTimeout(() => {
+                            this.displayToDefault()
+                        }, 3000)
+                    }
+                }, 1000)
+            }
+
+            cancelRecording() {
+                this.state = 'canceled...'
+                this.recorder.cancelRecording();
+                setTimeout(() => {
+                    this.displayToDefault()
+                }, 1000)
+            }
+
+            displayToDefault() {
+                this.kill = false
+                this.state = 'inactive...'
+                this.Elapsed = '00:00'
+                this.record = false
+            }
+
+            handleStop(rec, blob) {
+                this.blob = blob
+                this.kill = true
+                //  this.disable = false
             }
 
             playRecording() {
-                var fileReader = new FileReader(), soundSource, that = this.agentClass
-                soundSource = that.context.createBufferSource();
-                fileReader.onload = function (progressEvent) {
 
-                    that.context.decodeAudioData(this.result).then(function (buffer) {
-                        /* let concertHallBuffer = buffer;
-                         soundSource.buffer = concertHallBuffer*/
-                    }).catch(function (e) { console.log("Error with decoding audio data " + e.err); })
-                    soundSource.connect(that.context.destination);
-                    //soundSource.loop = true;
-                    soundSource.start();
-                }
-                fileReader.readAsArrayBuffer(this.blob2);
+                
             }
 
             downloadRecording() {
@@ -341,18 +491,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = Math.floor(Math.random(1) * 1000) + 'test.mp3';
+                a.download = new Date().toISOString() + '-splash.mp3';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a)
-            }
-
-            handleStop() {
-                if (this.recordedAudio.length > 1) {
-                    this.blob = new Blob(this.recordedAudio, { 'type': 'audio/ogg; codecs=opus' });
-                    this.blob2 = new Blob(this.recordedAudio, { 'type': 'audio/webm; codecs=vp9' });
-                    this.recordedAudio = [0]
-                }
             }
 
             toggleRecordingPause() {
@@ -367,36 +509,45 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-
             submit() {
-                setTimeout(() => {
-                    if (this.$.titleInput.value.length > 0) {
-                        this.agentClass.setStreamDestination((err, stream) => {
-                            if (typeof err === 'object') {
-                                throw this.error('input ', err);
-                            } else if (typeof err === 'string') {
-                                this.$.titleInput.value = 'already exists'
-                                throw this.error('input ', err);
-                                setTimeout(() => {
-                                    this.$.titleInput.value = ''
-                                    this.elemTitle = ''
-                                }, 1000)
-                            }
-                            if (err === false) {
-                                console.log(err)
-                                this.elemTitle = this.elemTitle.split(' ').join('')
-                                window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
-                                this.agentClass.setApplicable(() => {
-                                    window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                                }, { elemTitle: this.elemTitle, arr: [{ elemTitle: this.elemTitle, elem: this.$.apllyNow, titleFuncion: 'destination' }] }
-                                )
-                                this.open = false
-                                let options = { mimeType: 'audio/webm', audioBitsPerSecond: 128000 }
-                                this.recorder = new MediaRecorder(stream, options)
-                            }
-                        }, this.elemTitle)
-                    }
-                }, 500)
+                if (this.$.titleInput.value.length > 0) {
+                    this.elemTitle = this.elemTitle.split(' ').join('')
+                    this.agentClass.gain((err, mixer) => {
+                        if (typeof err === 'object') {
+                            throw this.error('input ', err);
+                        } else if (typeof err === 'string') {
+                            this.$.titleInput.value = 'already exists'
+                            throw this.error('input ', err);
+                            setTimeout(() => {
+                                this.$.titleInput.value = ''
+                                this.elemTitle = ''
+                            }, 1000)
+                        }
+                        if (err === false) {
+                            window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
+                            let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
+                            this.agentClass.setApplicable(() => {
+                                //     console.log('typeFuncion', this.typeFuncion)
+                                window.addEventListener('apllywith', (event) => {
+                                    this.applyer()
+                                }, false)
+                                window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                            }, {
+                                    elemTitle: this.elemTitle,
+                                    arr: [{
+                                        elemTitle: this.elemTitle,
+                                        titleFuncion: this.titleFuncion,
+                                        name: name
+                                    }]
+                                })
+                            this.open = false
+                            this.recorder = new WebAudioRecorder(mixer, {
+                                workerDir: '/public/scripts/'
+                            })
+                            this.recorder.setEncoding('mp3')
+                        }
+                    }, this.elemTitle, true)
+                }
             }
 
             error(msg, err) {
@@ -411,7 +562,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         this.parentElement.removeChild(this)
                         window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
                     }, this.elemTitle)
-                    console.log(this, this.parentElement)
+                    //  console.log(this, this.parentElement)
                 } else {
                     alert('insert tytle to remove item')
                 }

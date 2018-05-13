@@ -156,9 +156,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 }, 1000)
                             }
                             if (err === false) {
-                                console.log(err)
+                             //   console.log(err)
                                 this.elemTitle = this.elemTitle.split(' ').join('')
-                                window.dispatchEvent(new CustomEvent('elemem-title', {detail:{title: this.elemTitle}}))
+                                window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
                                 this.open = false
                                 this.gumMe()
                             }
@@ -201,7 +201,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             removeCall() {
                 if (this.open === false) {
-                    window.dispatchEvent(new CustomEvent('remove-elem', {detail:{title: this.elemTitle}}))
+                    window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
                     this.parentElement.removeChild(this)
                     delete this.agentClass.sourceNode[this.elemTitle]
                     console.log(this, this.parentElement)

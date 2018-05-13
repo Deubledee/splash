@@ -1,17 +1,16 @@
 const express = require('express');
 const expressSession = require("express-session")
-var RedisStore = require('connect-redis')(expressSession);
-const redis = require('redis');
+//var RedisStore = require('connect-redis')(expressSession);
+//const redis = require('redis');
 //const RedisServer = require('redis-server');
-var commands = require('redis-commands');
+//var commands = require('redis-commands');
 const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const index = require('./routes/index');
-const youtube = require('./routes/youtube');
-const newsapi = require('./routes/newsapi');
+const resend = require('./routes/resend');
 const app = express();
 const responseTime = require('response-time')
 var obj = {
@@ -22,7 +21,6 @@ var obj = {
     return t
   }
 }
-
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -46,5 +44,10 @@ app.use('/mixtable/*', index);
 app.use('/elemTitle/*', index);
 app.use('/removeelem/*', index);
 app.use('/profile/*', index);
-
+app.post('/audio/', resend);
 module.exports = app;
+/* upload.single('file'), function (req, res, next) {
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+  console.log(req.body)
+}*/

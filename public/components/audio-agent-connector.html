@@ -252,9 +252,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         } else {
                             if (bool === true) {
                                 data.model.children[1].setAttribute('sellected', true)
+                                window.dispatchEvent(new CustomEvent('connected', {
+                                    detail:
+                                        { connected: data.model.__data.destination.name, state: true }
+                                }))
                             }
                             if (bool === false) {
                                 data.model.children[1].removeAttribute('sellected', true)
+                                window.dispatchEvent(new CustomEvent('connected', {
+                                    detail:
+                                        { connected: data.model.__data.destination.name, state: false }
+                                }))
                             }
                         }
                     }, dest[this.permanentType], destination, bool)

@@ -61,9 +61,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </aside>
             </section>
             <section list-box-hiden boxShow$="[[boxShow]]" on-click="hidewBox2">
-                <paper-listbox slot="dropdown-content" multi>
-                    <template is="dom-repeat" items="{{applicables}}" as="applicable" mutable-data="true">
-                        <paper-item on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
+                <paper-listbox id="listBox" slot="dropdown-content" multi>
+                    <template id="model2" is="dom-repeat" items="{{applicables}}" as="applicable" mutable-data="true">
+                        <paper-item id='[[applicable.name]]' on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
                     </template>
                 </paper-listbox>
             </section>
@@ -106,6 +106,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 return {
                     type: {
                         type: String
+                    },
+                    sellected: {
+                        type: Array,
+                        value: []
                     },
                     boxShow: {
                         type: Boolean,
@@ -173,6 +177,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         value: '0'
                     },
+
                     agentClass: {
                         type: Object
                     },
@@ -197,14 +202,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
                 if (this.titleFuncion.indexOf('ancel') > 0) {
                     this.notHere = true
-                }  
+                }
+                window.addEventListener('apllywith', (event) => {
+                    this.applyer()
+                }, false)
+                let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
                 this.agentClass.setApplicable(() => {
-                    console.log('typeFuncion', this.typeFuncion)
+                    //     console.log('typeFuncion', this.typeFuncion)
                     window.addEventListener('apllywith', (event) => {
                         this.applyer()
                     }, false)
                     window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                }, { elemTitle: this.elemTitle, arr: [{ elemTitle: this.elemTitle, elem: this.$.apllyNow, titleFuncion: this.titleFuncion }] })              
+                }, {
+                        elemTitle: this.elemTitle,
+                        arr: [{
+                            elemTitle: this.elemTitle,
+                            titleFuncion: this.titleFuncion,
+                            name: name
+                        }]
+                    })
             }
 
 
@@ -227,6 +243,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             isFloat(n) {
                 return Number(parseFloat(n)) === n && n % 1 !== 0;
             }
+
             applyer() {
                 this.keys = [0]
                 let keys = Object.keys(this.agentClass.applicables)
@@ -247,33 +264,85 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.boxShow = true
                 this.applicables = [0]
                 let arr2 = []
+                let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
                 for (let j = 0; j < this.agentClass.applicables[event.model.__data.key].arr.length; j++) {
-                    if (this.agentClass.applicables[event.model.__data.key].arr[j].titleFuncion !== this.titleFuncion) {
+                    if (this.agentClass.applicables[event.model.__data.key].arr[j].name !== name) {
                         arr2.push(this.agentClass.applicables[event.model.__data.key].arr[j])
                     }
-
                 }
                 this.applicables = arr2
+                setTimeout(() => {
+                    this.shouldSellect(this.sellected, this.applicables)
+                }, 25)
+            }
+
+            shouldSellect(arr1, arr2) {
+                let itIs = []
+                arr1.map(item => {
+                    for (let i = 0; i < arr2.length; i++) {
+                        if (item.name === arr2[i].name) {
+                            this.sellect(this.$.listBox.children, arr2[i].name)
+                        }
+                        if (item.name !== arr2[i].name) {
+                            this.unSellect(this.$.listBox.children, arr2[i].name)
+                        }
+                    }
+                })
             }
 
             hidewBox2(event) {
                 this.boxShow = false
             }
 
+            sellect(elem, name) {
+                if (name === undefined) {
+                    elem.setAttribute('sellected', true)
+                    console.log('sellected', elem[name], name)
+                } else {
+                    elem[name].setAttribute('sellected', true)
+                }
+            }
+
+            unSellect(elem, name) {
+                if (name === undefined) {
+                    elem.removeAttribute('sellected', true)
+                    console.log('sellected', elem[name], name)
+                } else {
+                    elem[name].removeAttribute('sellected', true)
+                }
+            }
+            popFromArray(item) {
+                let arr = []
+                for (let i = 0; i < this.sellected.length; i++) {
+                    if (this.sellected[i].name !== item) {
+                        arr.push(this.sellected[i])
+                    }
+                }
+                this.sellected = arr
+                console.log('popfrom', this.sellected, arr)
+            }
             hidewBox(event) {
                 this.boxShow = false
                 let bool = event.model.children[1].hasAttribute('sellected') === true ? false : true
                 let name = event.model.__data.applicable.elemTitle + event.model.__data.applicable.titleFuncion.split(' ').join('').toLocaleUpperCase()
                 if (bool === true) {
-                    this.agentClass.setAppliesWith((err)=>{
-                        event.model.children[1].setAttribute('sellected', true)
-                    },{ elemTitle: name, elem: this.$.apllyNow, titleFuncion: this.titleFuncion })
+                    this.agentClass.setAppliesWith((err) => {
+                        if (event.model.children[1].innerHTML === event.model.__data.applicable.titleFuncion) {
+                            console.log('sellected here now..!', event.model.children[1].innerHTML, event.model.__data.applicable.titleFuncion)
+                            this.sellected.push({ name: name, sellected: true })
+                            this.sellect(event.model.children[1])
+                            console.log('pusheed..!', this.sellected)
+                        }
+                    }, { elemTitle: this.elemTitle, name: name, elem: this.$.apllyNow, titleFuncion: this.titleFuncion, sellected: true })
+                    // console.log(event.model.children[1], name, this.titleFuncion, event)
                 }
                 if (bool === false) {
-                    event.model.children[1].removeAttribute('sellected', true)
                     this.agentClass.revoveAppliesWith((err) => {
                         if (err) console.error(err)
-                    }, name, this.titleFuncion)
+                        //    console.log(bool)
+                        this.popFromArray(name)
+                        this.unSellect(event.model.children[1])
+                    }, { elemTitle: this.elemTitle, name: name, titleFuncion: this.titleFuncion, sellected: false })
                 }
             }
 

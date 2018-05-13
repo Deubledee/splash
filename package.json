@@ -1,6 +1,7 @@
 {
   "name": "tueeber",
   "license": "MIT",
+  "vesion": "0.0.1",
   "author": "deubledee",
   "repository": "https://github.com/Deubledee/tueeber.git",
   "devDependencies": {
@@ -21,21 +22,27 @@
     "test:integration": "polymer build # test that psk builds without error with the CLI"
   },
   "dependencies": {
+    "audio-converter": "^1.0.13",
     "body-parser": "^1.18.2",
     "connect-redis": "^3.3.3",
     "consolidate": "^0.15.0",
     "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
     "debug": "^2.6.9",
+    "del": "^3.0.0",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
+    "ffmpeg": "0.0.4",
     "morgan": "^1.9.0",
     "npm": "^5.6.0",
     "pkg-config": "^1.1.1",
     "prpl-server": "^1.0.0",
     "redis": "^2.8.0",
     "response-time": "^2.3.2",
+    "save-file": "^1.2.0",
     "serve-favicon": "^2.4.5",
     "socket.io": "^2.0.4",
+    "wav": "^1.0.2",
     "ws": "^1.0.1"
   }
 }
