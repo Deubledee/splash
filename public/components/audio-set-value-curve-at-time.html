@@ -11,24 +11,164 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="audio-set-value-curve-at-time">
     <template>
         <style include="shared-styles-typeF">
-            :host { width: 100%; margin-right: 0px; } .nav { font-size: 10px; } .labelforvol { top: -17px; } div span, input { position:
-            relative; top: -1px; left: 3px; font-size: 10px; text-shadow: 0px 0px 0px transparent; } div[close-button] {
-            top: 25px; } .show[show] { display: none } .show { flex-flow: column; padding-top: 0px; } .inputin { display:
-            flex; flex-flow: row; padding-right: 2px; padding-left: 4px; margin-bottom: 21px; } .inputin[show] { display:
-            none } .inputin aside { top: -7px; right: 0%; margin-right: 0px; } .show aside { display: flex; flex-flow: column;
-            } .showasidevol2 { display: block !important; } .inputin button { color: var(--app-input-color); background-color:
-            #2f2828; border-color: cadetblue; width: 50px; height: 18px; font-size: 8px; font-weight: bold; padding-left:
-            1px; } .inputin nav { margin-top: 7px; margin-bottom: 4px; } .input button { color: var(--app-input-color); background-color:
-            #5a6565; border-color: #fafafa; border-radius: 5px; width: 50px; height: 18px; font-size: 8px; font-weight: bold;
-            padding-left: 1px; text-shadow: var(--app-type-gain-text-shadow); } .input aside { right: 0%!important; } aside
-            input { color: #ede4e4; background-color: #5a6565; margin-top: 2px; border: 0; border-bottom: 1px solid; padding-left:
-            4px; box-shadow: 0px 0px 0px; } aside button { width: 147px; background-color: #5a6565; border: 0px; border-radius:
-            5px; box-shadow: 1px 2px 2px grey; } .showValues { color: #a9a1a1; } .showValues[show] { height: 2px; top: -4px;
-            } .input { height: 15px; visibility: visible; font-size: 9px; } .input[show] { visibility: collapse; } .input[input]
-            { visibility: collapse; } .showValueswraper { color: #a9a1a1; top: -14px; } .wavesNavDisplay { display: flex;
-            flex-flow: column; margin-bottom: 2px; font-size: 11px; } .wavesNavDisplay span { margin-left: 3px; font-size:
-            10px; } .top { position: relative; top: 38px; } section[list-box-hiden] { display: none } section[list-box-hiden][boxShow]
-            { display: block } paper-item[sellected] { background-color: chartreuse }
+            :host {
+                width: 100%;
+                margin-right: 0px;
+            }
+
+            .nav {
+                font-size: 10px;
+            }
+
+            .labelforvol {
+                top: -17px;
+            }
+
+            div span,
+            input {
+                position: relative;
+                top: -1px;
+                left: 3px;
+                font-size: 10px;
+                text-shadow: 0px 0px 0px transparent;
+            }
+
+            div[close-button] {
+                top: 25px;
+            }
+
+            .show[show] {
+                display: none
+            }
+
+            .show {
+                flex-flow: column;
+                padding-top: 0px;
+            }
+
+            .inputin {
+                display: flex;
+                flex-flow: row;
+                padding-right: 2px;
+                padding-left: 4px;
+                margin-bottom: 21px;
+            }
+
+            .inputin[show] {
+                display: none
+            }
+
+            .inputin aside {
+                top: -7px;
+                right: 0%;
+                margin-right: 0px;
+            }
+
+            .show aside {
+                display: flex;
+                flex-flow: column;
+            }
+
+            .showasidevol2 {
+                display: block !important;
+            }
+
+            .inputin button {
+                color: var(--app-input-color);
+                background-color: #2f2828;
+                border-color: cadetblue;
+                width: 50px;
+                height: 18px;
+                font-size: 8px;
+                font-weight: bold;
+                padding-left: 1px;
+            }
+
+            .inputin nav {
+                margin-top: 7px;
+                margin-bottom: 4px;
+            }
+
+            .input button {
+                color: var(--app-input-color);
+                background-color: #5a6565;
+                border-color: #fafafa;
+                border-radius: 5px;
+                width: 50px;
+                height: 18px;
+                font-size: 8px;
+                font-weight: bold;
+                padding-left: 1px;
+                text-shadow: var(--app-type-gain-text-shadow);
+            }
+
+            .input aside {
+                right: 0% !important;
+            }
+
+            aside input {
+                color: #ede4e4;
+                background-color: #5a6565;
+                margin-top: 2px;
+                border: 0;
+                border-bottom: 1px solid;
+                padding-left: 4px;
+                box-shadow: 0px 0px 0px;
+            }
+
+            aside button {
+                width: 147px;
+                background-color: #5a6565;
+                border: 0px;
+                border-radius: 5px;
+                box-shadow: 1px 2px 2px grey;
+            }
+
+            .showValues {
+                color: #a9a1a1;
+            }
+
+            .showValues[show] {
+                height: 2px;
+                top: -4px;
+            }
+
+            .input {
+                height: 15px;
+                visibility: visible;
+                font-size: 9px;
+            }
+
+            .input[show] {
+                visibility: collapse;
+            }
+
+            .input[input] {
+                visibility: collapse;
+            }
+
+            .showValueswraper {
+                color: #a9a1a1;
+                top: -14px;
+            }
+
+            .wavesNavDisplay {
+                display: flex;
+                flex-flow: column;
+                margin-bottom: 2px;
+                font-size: 11px;
+            }
+
+            .wavesNavDisplay span {
+                margin-left: 3px;
+                font-size: 10px;
+            }
+
+            .top {
+                position: relative;
+                top: 38px;
+            }            
+
         </style>
         <app-location route="{{route}}"></app-location>
         <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}" query-params="{{query}}"></app-route>
@@ -78,26 +218,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </aside>
             </section>
             <section class="inputin input" show$="[[show]]">
-                <aside>
-                    <paper-menu-button>
-                        <paper-button slot="dropdown-trigger" alt="menu">aplly with</paper-button>
-                        <paper-listbox slot="dropdown-content">
-                            <template id="applyNode" is="dom-repeat" items="{{keys}}" as="key" mutable-data="true">
-                                <paper-item on-click="showBox">[[key]]</paper-item>
-                            </template>
-                        </paper-listbox>
-                    </paper-menu-button>
-                </aside>
-                <aside>
-                    <paper-button id="apllyNow" on-click="apllyNow">aplly now</paper-button>
-                </aside>
-            </section>
-            <section list-box-hiden boxShow$="[[boxShow]]" on-click="hidewBox2">
-                <paper-listbox id="listBox" slot="dropdown-content" multi>
-                    <template is="dom-repeat" items="{{applicables}}" as="applicable" mutable-data="true">
-                        <paper-item id='[[applicable.name]]' on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
-                    </template>
-                </paper-listbox>
+                <audio-aplly-with id="aplyWith">
+                    <paper-button slot="applyButton" id="apllyNow" on-click="apllyNow">aplly now</paper-button>
+                </audio-aplly-with>
             </section>
         </article>
     </template>
@@ -111,37 +234,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             ready() {
                 super.ready()
-                let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
-                this.agentClass.setApplicable(() => {
-                    //     console.log('typeFuncion', this.typeFuncion)
-                    window.addEventListener('apllywith', (event) => {
-                        this.applyer()
-                    }, false)
-                    window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                }, {
-                        elemTitle: this.elemTitle,
-                        arr: [{
-                            elemTitle: this.elemTitle,
-                            titleFuncion: this.titleFuncion,
-                            name: name
-                        }]
-                    })
+                setTimeout(()=>{
+                    this.$.aplyWith.agentClass = this.agentClass
+                    this.$.aplyWith.titleFuncion = this.titleFuncion
+                    this.$.aplyWith.elemTitle = this.elemTitle
+                },500)
+               // elemTitle="[[elemTitle]]" titleFuncion="[[titleFuncion]]" agentClass="[[agentClass]]"
             }
             static get properties() {
                 return {
-                    boxShow: {
-                        type: Boolean,
-                        value: false,
-                        notify: true,
-                        reflectToAttribute: true
-                    },
                     notHere: {
                         type: Boolean,
                         value: false,
                         notify: true,
                     },
+                    elemTitle: {
+                        type: String,
+                        notify: true
+                    },
                     titleFuncion: {
                         type: String,
+                        notify: true
                     },
                     typeFuncion: {
                         type: String
@@ -155,24 +268,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: function () {
                             return titleObj
                         }
-                    },
-                    keys: {
-                        type: Array,
-                        value: function () {
-                            return []
-                        },
-                        notify: true
-                    },
-                    applicables: {
-                        type: Array,
-                        value: function () {
-                            return []
-                        },
-                        notify: true
-                    },
-                    elemTitle: {
-                        type: String,
-                        notify: true
                     },
                     rEady: {
                         type: Boolean,
@@ -208,10 +303,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         notify: true
                     },
-                    sellected: {
-                        type: Array,
-                        value: []
-                    },
                     inputsArray: {
                         type: Array,
                         notify: true,
@@ -239,108 +330,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _log(data) {
                 console.log('app log', data)
-            }
-
-            applyer() {
-                this.keys = [0]
-                let keys = Object.keys(this.agentClass.applicables)
-                let arr = [], arr2 = []
-                for (let i = 0; i < keys.length; i++) {
-                    if (keys[i] === this.elemTitle && this.agentClass.applicables[keys[i]].arr.length > 1) {
-                        arr.push(keys[i])
-                    }
-                    if (keys[i] !== this.elemTitle) {
-                        arr.push(keys[i])
-                    }
-                }
-
-                this.keys = arr
-            }
-
-            showBox(event) {
-                this.boxShow = true
-                this.applicables = [0]
-                let arr2 = []
-                let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
-                for (let j = 0; j < this.agentClass.applicables[event.model.__data.key].arr.length; j++) {
-                    if (this.agentClass.applicables[event.model.__data.key].arr[j].name !== name) {
-                        arr2.push(this.agentClass.applicables[event.model.__data.key].arr[j])
-                    }
-                }
-                this.applicables = arr2
-                setTimeout(() => {
-                    this.shouldSellect(this.sellected, this.applicables)
-                }, 25)
-            }
-
-            shouldSellect(arr1, arr2) {
-                let itIs = []
-                arr1.map(item => {
-                    for (let i = 0; i < arr2.length; i++) {
-                        if (item.name === arr2[i].name) {
-                            this.sellect(this.$.listBox.children, arr2[i].name)
-                        }
-                        if (item.name !== arr2[i].name) {
-                            this.unSellect(this.$.listBox.children, arr2[i].name)
-                        }
-                    }
-                })
-            }
-
-            hidewBox2(event) {
-                this.boxShow = false
-            }
-
-            sellect(elem, name) {
-                if (name === undefined) {
-                    elem.setAttribute('sellected', true)
-                    console.log('sellected', elem[name], name)
-                } else {
-                    elem[name].setAttribute('sellected', true)
-                }
-            }
-
-            unSellect(elem, name) {
-                if (name === undefined) {
-                    elem.removeAttribute('sellected', true)
-                    console.log('sellected', elem[name], name)
-                } else {
-                    elem[name].removeAttribute('sellected', true)
-                }
-            }
-            popFromArray(item) {
-                let arr = []
-                for (let i = 0; i < this.sellected.length; i++) {
-                    if (this.sellected[i].name !== item) {
-                        arr.push(this.sellected[i])
-                    }
-                }
-                this.sellected = arr
-                console.log('popfrom', this.sellected, arr)
-            }
-            hidewBox(event) {
-                this.boxShow = false
-                let bool = event.model.children[1].hasAttribute('sellected') === true ? false : true
-                let name = event.model.__data.applicable.elemTitle + event.model.__data.applicable.titleFuncion.split(' ').join('').toLocaleUpperCase()
-                if (bool === true) {
-                    this.agentClass.setAppliesWith((err) => {
-                        if (event.model.children[1].innerHTML === event.model.__data.applicable.titleFuncion) {
-                            console.log('sellected here now..!', event.model.children[1].innerHTML, event.model.__data.applicable.titleFuncion)
-                            this.sellected.push({ name: name, sellected: true })
-                            this.sellect(event.model.children[1])
-                            console.log('pusheed..!', this.sellected)
-                        }
-                    }, { elemTitle: this.elemTitle, name: name, elem: this.$.apllyNow, titleFuncion: this.titleFuncion, sellected: true })
-                    // console.log(event.model.children[1], name, this.titleFuncion, event)
-                }
-                if (bool === false) {
-                    this.agentClass.revoveAppliesWith((err) => {
-                        if (err) console.error(err)
-                        //    console.log(bool)
-                        this.popFromArray(name)
-                        this.unSellect(event.model.children[1])
-                    },{ elemTitle: this.elemTitle, name: name, titleFuncion: this.titleFuncion, sellected: false })
-                }
             }
 
             removeCall() {
@@ -374,7 +363,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             Error(err) {
-
+                console.log(err)
             }
 
             checkValues(waveArray, bindStart, bindConst) {
@@ -407,7 +396,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.sendError('worng duration value...', err)
                 }
             }
-            
+
             setParam(that) {
                 this.$.frovol.innerHTML = 'Waitng...'
                 this.waiting = true

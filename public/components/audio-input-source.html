@@ -11,7 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="audio-input-source">
     <template>
         <style include="shared-styles-typeG">
-            :host { width: 100%; margin-right: var(--app-standart-border-radius); } article { box-shadow: var( --app-toolbar-box-shadow);
+            :host { width: 100%; margin-right: var(--app-standart-border-radius); } article { box-shadow: var( --app-type-gain-box-shadow);
             border-radius: var(--app-standart-border-radius); margin-top: 6px; width: 164px; background-color: var(--app-primary-background-color);
             padding-left: 9px; display: flex; flex-flow: column; } iron-input { flex-basis: 25px; } span, label[for=range]
             { color: var(--app-color) } .open[open]{height: auto} audio{width: 128px} paper-icon-button {color: var(--app-color)}
@@ -19,20 +19,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <article>
             <label for="range">[[elemTitle]]
-                <span>Source</span>
+                <paper-icon-button icon="input" title="[[type]]"></paper-icon-button>
                 <button on-click="removeCall"> x </button>
             </label>
             <section id="title" class="open" open$="[[!open]]">
-                <paper-item>
-                    <paper-item-body two-line>
-                        <paper-input class="diferent" title="Elapsed time" label="Elapsed" value="{{Elapsed}}">
-                        </paper-input>
-                        <audio id="audio" class="diferent" title="Elapsed Time" on-timeupdate="timeupdate" label="Elapsed Time">
-                        </audio>
-                    </paper-item-body>
-                    <paper-icon-button on-click="toggleTimeView" icon="query-builder" title="toggle time view"></paper-icon-button>
-                </paper-item>
-
+                <paper-input class="diferent" title="Elapsed time" label="Elapsed" value="{{Elapsed}}">
+                </paper-input>
+                <audio id="audio" class="diferent" title="Elapsed Time" on-timeupdate="timeupdate" label="Elapsed Time">
+                </audio>
             </section>
             <div class="open divtitle-area" open$="[[open]]">
                 <section id="title" class="open" open$="[[open]]">
@@ -88,7 +82,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     constraints: {
                         type: Object,
                         value: function () {
-                            return { audio: true, video: false }
+                            return {
+                                audio: {
+                                    autoGainControl: { ideal: 1 },
+                                    channelCount: 2,
+                                    echoCancelation: false,
+                                    noiseSuspension: false
+                                }, video: false
+                            }
                         }
                     },
                     open: {
@@ -105,10 +106,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             timeupdate(event) {
-                // console.log(event)
-                let timeupdate = this.timeView === true ? ('' + event.timeStamp).split('.')[0] : event.path[0].currentTime
-                this.$.audio.controls = false
-                this.Elapsed = timeupdate.toString()
+                let currentSeconds = (Math.floor(this.$.audio.currentTime % 60) < 10 ? '0' : '') + Math.floor(this.$.audio.currentTime % 60);
+                let currentMinutes = Math.floor(this.$.audio.currentTime / 60);
+                this.Elapsed = currentMinutes + ":" + currentSeconds
             }
 
             toggleTimeView() {
@@ -156,8 +156,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 }, 1000)
                             }
                             if (err === false) {
-                             //   console.log(err)
+                                var that = this
+                                window.dispatchEvent(new CustomEvent('connect', { detail: { element: that } }))
                                 this.elemTitle = this.elemTitle.split(' ').join('')
+                                window.dispatchEvent(new CustomEvent('source', { detail: { name: this.elemTitle, type: this.type } }))
                                 window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
                                 this.open = false
                                 this.gumMe()
@@ -167,7 +169,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }, 500)
             }
 
-            gumMe() {
+             gumMe() {
                 if (this.promisse === true) {
                     this.gUM.getUserMedia(this.constraints)
                         .then((this.success).bind(this))
@@ -181,17 +183,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             success(stream) {
                 this.agentClass.inputStreamSource((err, stream) => {
-                    this.agentClass.analyser((err) => {
-                        if (err) { throw this.error('analizer ', err); return }
-                        this.agentClass.connectAgents((err) => {
-                            if (err) { throw this.error('connector ', err); return }
-                            this.$.audio.srcObject = stream
-                            this.$.audio.muted = true
-                            this.$.audio.controls = false
-                            this.$.audio.play()
-                        }, this.agentClass.sourceNode[this.elemTitle],
-                            this.agentClass.analyserNode[this.elemTitle], true)
-                    }, this.elemTitle)
+                    this.$.audio.srcObject = stream
+                    this.$.audio.muted = true
+                    this.$.audio.controls = false
+                    this.$.audio.play()
                 }, this.elemTitle, stream)
             }
 
@@ -200,14 +195,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             removeCall() {
-                if (this.open === false) {
-                    window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
-                    this.parentElement.removeChild(this)
-                    delete this.agentClass.sourceNode[this.elemTitle]
-                    console.log(this, this.parentElement)
-                } else {
-                    alert('insert tytle to remove item')
-                }
+                window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                window.dispatchEvent(new CustomEvent('remove-source', { detail: { name: this.elemTitle, type: this.type } }))
+                this.parentElement.removeChild(this)
+                delete this.agentClass.sourceNode[this.elemTitle]
+                console.log(this, this.parentElement)
             }
         }
         window.customElements.define(audioInputSource.is, audioInputSource);

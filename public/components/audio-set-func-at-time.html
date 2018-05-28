@@ -24,8 +24,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </label>
                 </div>
                 <div class="showValueswraper" on-click="showValues" show$="[[show]]">
-                    <paper-icon-button noink icon="unfold-less" title="find" class="none showValues" show$="[[show]]"></paper-icon-button>
-                    <paper-icon-button noink icon="unfold-more" title="find" class="none showValues" show$="[[!show]]"></paper-icon-button>
+                    <paper-icon-button noink icon="unfold-less" title="close" class="none showValues" show$="[[show]]"></paper-icon-button>
+                    <paper-icon-button noink icon="unfold-more" title="open" class="none showValues" show$="[[!show]]"></paper-icon-button>
                 </div>
 
                 <div close-button class="buttShow" show$="[[show]]" on-click="removeCall">
@@ -46,19 +46,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </template>
             </section>
             <section class="inputin" show$="[[show]]">
-                <aside>
-                    <paper-menu-button>
-                        <paper-button slot="dropdown-trigger" alt="menu">aplly with</paper-button>
-                        <paper-listbox slot="dropdown-content">
-                            <template id="applyNode" is="dom-repeat" items="{{keys}}" as="key" mutable-data="true">
-                                <paper-item on-click="showBox">[[key]]</paper-item>
-                            </template>
-                        </paper-listbox>
-                    </paper-menu-button>
-                </aside>
-                <aside>
-                    <paper-button id="apllyNow" on-click="apllyNow">aplly now</paper-button>
-                </aside>
+                <audio-aplly-with id="aplyWith">
+                    <paper-button slot="applyButton" id="apllyNow" on-click="apllyNow">aplly now</paper-button>
+                </audio-aplly-with>
             </section>
             <section list-box-hiden boxShow$="[[boxShow]]" on-click="hidewBox2">
                 <paper-listbox id="listBox" slot="dropdown-content" multi>
@@ -104,6 +94,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             static get properties() {
                 return {
+                    agentClass: {
+                        type: Object
+                    },
+                    contextNode: {
+                        type: Object
+                    },
+                    elemTitle: {
+                        type: String,
+                        notify: true
+                    },
                     type: {
                         type: String
                     },
@@ -139,20 +139,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             return titleObj
                         }
                     },
-                    keys: {
-                        type: Array,
-                        value: function () {
-                            return []
-                        },
-                        notify: true
-                    },
-                    applicables: {
-                        type: Array,
-                        value: function () {
-                            return []
-                        },
-                        notify: true
-                    },
                     rEady: {
                         type: Boolean,
                         value: false,
@@ -177,17 +163,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         value: '0'
                     },
-
-                    agentClass: {
-                        type: Object
-                    },
-                    contextNode: {
-                        type: Object
-                    },
-                    elemTitle: {
-                        type: String,
-                        notify: true
-                    },
                     show: {
                         type: Boolean,
                         value: false,
@@ -203,26 +178,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if (this.titleFuncion.indexOf('ancel') > 0) {
                     this.notHere = true
                 }
-                window.addEventListener('apllywith', (event) => {
-                    this.applyer()
-                }, false)
-                let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
-                this.agentClass.setApplicable(() => {
-                    //     console.log('typeFuncion', this.typeFuncion)
-                    window.addEventListener('apllywith', (event) => {
-                        this.applyer()
-                    }, false)
-                    window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                }, {
-                        elemTitle: this.elemTitle,
-                        arr: [{
-                            elemTitle: this.elemTitle,
-                            titleFuncion: this.titleFuncion,
-                            name: name
-                        }]
-                    })
+                setTimeout(() => {
+                    this.$.aplyWith.agentClass = this.agentClass
+                    this.$.aplyWith.titleFuncion = this.titleFuncion
+                    this.$.aplyWith.elemTitle = this.elemTitle
+                }, 500)
             }
-
 
             escape(value) {
                 let bol = true
@@ -240,110 +201,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
                 return bol
             }
+
             isFloat(n) {
                 return Number(parseFloat(n)) === n && n % 1 !== 0;
-            }
-
-            applyer() {
-                this.keys = [0]
-                let keys = Object.keys(this.agentClass.applicables)
-                let arr = [], arr2 = []
-                for (let i = 0; i < keys.length; i++) {
-                    if (keys[i] === this.elemTitle && this.agentClass.applicables[keys[i]].arr.length > 1) {
-                        arr.push(keys[i])
-                    }
-                    if (keys[i] !== this.elemTitle) {
-                        arr.push(keys[i])
-                    }
-                }
-
-                this.keys = arr
-            }
-
-            showBox(event) {
-                this.boxShow = true
-                this.applicables = [0]
-                let arr2 = []
-                let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
-                for (let j = 0; j < this.agentClass.applicables[event.model.__data.key].arr.length; j++) {
-                    if (this.agentClass.applicables[event.model.__data.key].arr[j].name !== name) {
-                        arr2.push(this.agentClass.applicables[event.model.__data.key].arr[j])
-                    }
-                }
-                this.applicables = arr2
-                setTimeout(() => {
-                    this.shouldSellect(this.sellected, this.applicables)
-                }, 25)
-            }
-
-            shouldSellect(arr1, arr2) {
-                let itIs = []
-                arr1.map(item => {
-                    for (let i = 0; i < arr2.length; i++) {
-                        if (item.name === arr2[i].name) {
-                            this.sellect(this.$.listBox.children, arr2[i].name)
-                        }
-                        if (item.name !== arr2[i].name) {
-                            this.unSellect(this.$.listBox.children, arr2[i].name)
-                        }
-                    }
-                })
-            }
-
-            hidewBox2(event) {
-                this.boxShow = false
-            }
-
-            sellect(elem, name) {
-                if (name === undefined) {
-                    elem.setAttribute('sellected', true)
-                    console.log('sellected', elem[name], name)
-                } else {
-                    elem[name].setAttribute('sellected', true)
-                }
-            }
-
-            unSellect(elem, name) {
-                if (name === undefined) {
-                    elem.removeAttribute('sellected', true)
-                    console.log('sellected', elem[name], name)
-                } else {
-                    elem[name].removeAttribute('sellected', true)
-                }
-            }
-            popFromArray(item) {
-                let arr = []
-                for (let i = 0; i < this.sellected.length; i++) {
-                    if (this.sellected[i].name !== item) {
-                        arr.push(this.sellected[i])
-                    }
-                }
-                this.sellected = arr
-                console.log('popfrom', this.sellected, arr)
-            }
-            hidewBox(event) {
-                this.boxShow = false
-                let bool = event.model.children[1].hasAttribute('sellected') === true ? false : true
-                let name = event.model.__data.applicable.elemTitle + event.model.__data.applicable.titleFuncion.split(' ').join('').toLocaleUpperCase()
-                if (bool === true) {
-                    this.agentClass.setAppliesWith((err) => {
-                        if (event.model.children[1].innerHTML === event.model.__data.applicable.titleFuncion) {
-                            console.log('sellected here now..!', event.model.children[1].innerHTML, event.model.__data.applicable.titleFuncion)
-                            this.sellected.push({ name: name, sellected: true })
-                            this.sellect(event.model.children[1])
-                            console.log('pusheed..!', this.sellected)
-                        }
-                    }, { elemTitle: this.elemTitle, name: name, elem: this.$.apllyNow, titleFuncion: this.titleFuncion, sellected: true })
-                    // console.log(event.model.children[1], name, this.titleFuncion, event)
-                }
-                if (bool === false) {
-                    this.agentClass.revoveAppliesWith((err) => {
-                        if (err) console.error(err)
-                        //    console.log(bool)
-                        this.popFromArray(name)
-                        this.unSellect(event.model.children[1])
-                    }, { elemTitle: this.elemTitle, name: name, titleFuncion: this.titleFuncion, sellected: false })
-                }
             }
 
             removeCall() {
@@ -354,7 +214,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             showValues() {
-
                 this.show = !this.show
             }
 

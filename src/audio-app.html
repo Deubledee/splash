@@ -39,7 +39,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: inline-flex;
         width: 99.4%;
       }
-
+      div[main-area]{
+        padding: 3px;
+        padding-top: 4px
+      }
       .column {
         display: flex;
         flex-flow: column;
@@ -61,18 +64,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <nav slot="analizerArea">
             </nav>
             <nav slot="agentArea"></nav>
-            <nav class="column" slot="sourceArea"></nav>
+            <nav class="column" slot="sourceArea">
+            </nav>
             <nav class="column" slot="connectorArea"></nav>
           </audio-mixtable>
         </div>
 
       </app-header>
     </app-header-layout>
-    <!--
-    ____  agent-class="[[agentClass]]"______
-      news-data provides the list of categories and the articles for the category.
-    -->
-
   </template>
 
   <script>
@@ -83,10 +82,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return 'audio-app';
       }
 
-      connectedCallback() {
+   /*   connectedCallback() {
         super.connectedCallback();
         this.isAttached = true;
-      }
+      }*/
 
       static get properties() {
         return {

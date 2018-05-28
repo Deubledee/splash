@@ -29,6 +29,24 @@ class WetAgents {
         }
     }
 
+    setElementSource(done, sourceName, mediaElement) {
+        try {
+            if (this.streamNode[sourceName] === undefined &&
+                this.sourceNode[sourceName] === undefined &&
+                this.contextNode[sourceName] === undefined &&
+                sourceName) {
+                this.sourceNode[sourceName] = this.context.createMediaElementSource(mediaElement);
+                done(false)
+                return
+            } else {
+                done(sourceName + ' already exists or no argumet value!!')
+                return
+            }
+        } catch (err) {
+            done(err)
+        }
+    }
+
     setStreamDestination(done, streamName, contextNode) {
         try {
             if (this.streamNode[streamName] === undefined &&
@@ -37,6 +55,22 @@ class WetAgents {
                 done(false, this.streamNode[streamName])
             } else {
                 done(sourceName + ' already exists or no argumet value!!')
+            }
+        } catch (err) {
+            done(err)
+        }
+    }
+
+    analyser(done, nodename) {
+        try {
+            if (!this.analyserNode[nodename] && nodename) {
+                this.analyserNode[nodename] = this.context.createAnalyser();
+                this.analyserNode[nodename].minDecibels = -90;
+                this.analyserNode[nodename].maxDecibels = -10;
+                this.analyserNode[nodename].smoothingTimeConstant = 0.85;
+                done()
+            } else {
+                done(nodename + ' already exists or no argumet value!!')
             }
         } catch (err) {
             done(err)
@@ -131,13 +165,15 @@ class WetAgents {
     }
 
     setApplicable(done, obj) {
-        if (!this.applicables[obj.elemTitle]) {
-            this.applicables[obj.elemTitle] = obj
-            ///   
-            console.log('create', this.applicables[obj.elemTitle])
-        } else {
-            this.applicables[obj.elemTitle].arr.push(obj.arr[0])
-            console.log('add', this.applicables[obj.elemTitle])
+        if (obj.elemTitle !== undefined) {
+            if (!this.applicables[obj.elemTitle]) {
+                this.applicables[obj.elemTitle] = obj
+                ///   
+                //console.log('create', this.applicables[obj.elemTitle])
+            } else {
+                this.applicables[obj.elemTitle].arr.push(obj.arr[0])
+                // console.log('add', this.applicables[obj.elemTitle])
+            }
         }
         done()
     }
@@ -192,23 +228,6 @@ class WetAgents {
         this.revoveApplicables(() => {
         }, elemTitle, titleFunction)
         done()
-    }
-
-
-    analyser(done, nodename) {
-        try {
-            if (!this.analyserNode[nodename] && nodename) {
-                this.analyserNode[nodename] = this.context.createAnalyser();
-                this.analyserNode[nodename].minDecibels = -90;
-                this.analyserNode[nodename].maxDecibels = -10;
-                this.analyserNode[nodename].smoothingTimeConstant = 0.85;
-                done()
-            } else {
-                done(nodename + ' already exists or no argumet value!!')
-            }
-        } catch (err) {
-            done(err)
-        }
     }
 
     sineWave(done, canvasCtx, width, height, nodename) {
@@ -390,7 +409,6 @@ class WetAgents {
         }
     }
 
-
     killVisual(context2d, width, height) {
         context2d.fillStyle = '#000000'
         context2d.fillRect(0, 0, width, height)
@@ -427,10 +445,6 @@ class WetAgents {
 
     oscillator(oscillator, stream) {
         this[oscillator] = sourceBuffer.createOscillator();
-    }
-
-    ElementSource(source, mediaElement) {
-        this[source] = this.context.createMediaElementSource(mediaElement);
     }
 
     newBuffer(sourceName, channels) {

@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <style include="shared-styles-dropdown">
             :host {
                 width: 100%;
-                flex-basis: 187px;
+                margin-bottom: 20px;
             }
 
             a {
@@ -26,7 +26,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 /* box-shadow: 2px 2px 6px #272424; */
                 border-radius: var(--app-standart-border-radius);
                 width: 90%;
-                height: 182px;
                 background-color: var(--app-secondary-background-color);
                 color: var(--app-color);
             }
@@ -38,25 +37,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 padding: var(--app-standart-border-radius);
             }
 
-            article label[for=connector] {
+            section div {
+                box-shadow: var( --app-type-gain-box-shadow);
                 font-family: 'NotoColorEmoji';
-                font-size: 21px;
+                word-break: break-all;
+                font-size: 90%;
                 margin-bottom: var(--app-standart-border-radius);
                 width: 100%;
                 text-shadow: var(--app-type-dropdown-text-shadow);
                 padding-left: 9px;
                 padding-top: 3px;
                 background-color: var(--app-primary-background-color);
-                border-radius: var(--app-standart-border-radius)
+                border-radius: var(--app-standart-border-radius);
+                height: 35px;
+                display: inline-flex;
+            }
+
+            article label[for=connector] {
+                width: 80%;
+                padding-top: 9px
             }
 
             section {
-                display: flex;
-
+                display: inline-flex;
             }
 
             aside {
                 flex-basis: 71px
+            }
+
+            .show[show] {
+                display: none
+            }
+
+            .show {
+                display: flex;
+                flex-flow: nowrap;
+                padding-top: 2px;
             }
 
             paper-listbox.dropdown-content {
@@ -72,17 +89,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     display: initial;
                 }
             }
+
+            paper-icon-button {
+                display: none
+            }
+
+            paper-icon-button[source],
+            paper-icon-button[agent] {
+                display: block
+            }
         </style>
-        <app-location route="{{route}}"></app-location>
-        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}" query-params="{{query}}"></app-route>
         <nav>
             <article>
                 <section>
-                    <label for="connector">
-                        <span> [[permanentType]] [[type]] </span>
-                    </label>
+                    <div>
+                        <label for="connector">
+                            [[permanentType]]
+                        </label>
+                        <paper-icon-button on-click="showValues" noink icon="unfold-less" title="close" class="show" show$="[[show]]"></paper-icon-button>
+                        <paper-icon-button on-click="showValues" noink icon="unfold-more" title="open" class="show" show$="[[!show]]"></paper-icon-button>
+                    </div>
+                    <paper-icon-button source$="[[source]]" icon="input" title="[[type]]"></paper-icon-button>
+                    <paper-icon-button agent$="[[agent]]" icon="av:recent-actors" title="[[type]]"></paper-icon-button>
                 </section>
-                <aside>
+                <aside class="show" show$="[[show]]">
                     <paper-dropdown-menu class="custom custom2" label="[[value]]">
                         <paper-listbox id="listBox1" slot="dropdown-content" class="dropdown-content" selected="0">
                             <template is="dom-repeat" items="{{options}}" as="option" mutable-data="true">
@@ -93,7 +123,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         </paper-listbox>
                     </paper-dropdown-menu>
                 </aside>
-                <aside>
+                <aside class="show" show$="[[show]]">
                     <paper-dropdown-menu class="custom custom2" label="[[value2]]">
                         <paper-listbox id="listBox2" slot="dropdown-content" class="dropdown-content" selected="0">
                             <template is="dom-repeat" items="{{destinations}}" as="destination" mutable-data="true">
@@ -136,7 +166,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             static get properties() {
                 return {
                     type: {
-                        type: String
+                        type: String,
+                        observer: 'typer'
                     },
                     permanentType: {
                         type: String,
@@ -165,15 +196,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Array,
                         value: [{ name: 'Connections' }],
                         notify: true
-                    }
+                    },
+                    source: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    agent: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    show: {
+                        type: Boolean,
+                        value: true,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
                 }
+            }
+            //to set the icons
+            typer(event) {
+                if (event === 'source' || event === 'stream') {
+                    this.source = true
+                    this.agent = false
+                } else {
+                    this.source = false
+                    this.agent = true
+                }
+            }
+
+            showValues() {
+                this.show = !this.show
             }
 
             _elemDestinationChanged() {
                 setTimeout(() => {
                     let keys = Object.keys(this.agentClass.streamNode)
-                    let arr = [{ id: 'Destinations', name: 'Destinations' },
-                    { id: 'speakers', name: 'speakers' }]
+                    let arr = [
+                        { id: 'Destinations', name: 'Destinations' },
+                        { id: 'speakers', name: 'speakers' },
+                    ]
                     this.destinations = []
                     if (keys.length > 0) {
                         for (let node in this.agentClass.streamNode) {
@@ -198,30 +263,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }, 500)
             }
 
-            removeCall(data) {
-                if (this.type !== 'source') {
-                    if (this.agentClass.contextNode[this.permanentType].connected) {
-                        this.agentClass.connectAgents((err) => {
-                            if (err)
-                                throw this.error('disconnection', err)
-                        }, this.agentClass.contextNode[this.permanentType].connected, this.agentClass.contextNode[this.permanentType], false)
-                    }
-                }
-                this.parentElement.removeChild(this)
-                delete this.agentClass.contextNode[this.permanentType]
-            }
-
-            title(elemTitle) {
-                if (!this.permanentType) {
-                    this.permanentType = elemTitle
-                } /*else {
-                    return this.permanentType
-                }*/
-            }
 
             connection(data) {
                 if (data && data.model && data.model.__data.option.name !== 'Connections') {
-                    let dest = this.type === 'source' ? this.agentClass.sourceNode : this.agentClass.contextNode
+                    let dest = this.source === true ? this.agentClass.sourceNode : this.agentClass.contextNode
                     let bool = data.model.children[1].hasAttribute('sellected') === true ? false : true
                     this.agentClass.connectAgents((err) => {
                         if (err) {
@@ -235,16 +280,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             }
                         }
                     }, dest[this.permanentType], this.agentClass.contextNode[data.model.__data.option.name], bool)
+
                     this.changeToOne(this.$.listBox1.__data.items[0])
                 }
             }
 
             destination(data) {
-                console.log(this.$.listBox2.__data.items[0])
                 if (data && data.model && data.model.__data.destination.name !== 'Destinations') {
-                    let dest = this.type === 'source' ? this.agentClass.sourceNode : this.agentClass.contextNode
-                    let destination = data.model.__data.destination.name === 'speakers' ? this.agentClass.context.destination :
+                    let dest = this.source === true ? this.agentClass.sourceNode : this.agentClass.contextNode
+                    let destinationType = data.model.__data.destination.name
+                    let destination = destinationType === 'speakers' ? this.agentClass.context.destination :
                         this.agentClass.streamNode[data.model.__data.destination.name]
+
                     let bool = data.model.children[1].hasAttribute('sellected') === true ? false : true
                     this.agentClass.connectAgents((err) => {
                         if (err) {
@@ -270,6 +317,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
+            removeCall(data) {
+                if (this.type !== 'source' && this.type !== 'stream') {
+                    if (this.agentClass.contextNode[this.permanentType].connected) {
+                        this.agentClass.connectAgents((err) => {
+                            if (err)
+                                throw this.error('disconnection', err)
+                        }, this.agentClass.contextNode[this.permanentType].connected, this.agentClass.contextNode[this.permanentType], false)
+                    }
+                }
+                if (this.parentElement)
+                    this.parentElement.removeChild(this)
+                delete this.agentClass.contextNode[this.permanentType]
+            }
+
+            title(elemTitle) {
+                if (!this.permanentType) {
+                    this.permanentType = elemTitle
+                } /*else {
+                    return this.permanentType
+                }*/
+            }
             error(msg, err) {
                 console.error(msg, err);
             }

@@ -75,9 +75,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: [
                             { id: 'sources', name: 'Add source' },
                             { id: 'input-source', name: 'From Input' },
-                            { id: 'decode-source', name: 'From Url' },
-                            { id: 'create-media-element-source', name: 'From File' },
                             { id: 'recorder', name: 'Recorder' },
+                           om File' },
                         ]
                     }
                 }
@@ -87,8 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.value = data.model.__data.option.id
                 if (data.model.__data.option.id !== 'sources')
                     setTimeout(() => { this.$.listBox2.__data.items[0].click() }, 100)
-
-            }
+                 }
         }
         window.customElements.define(audioSourceSelector.is, audioSourceSelector);
 
