@@ -310,20 +310,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            removeCall(data) {
-                if (this.type !== 'source' && this.type !== 'stream') {
-                    if (this.agentClass.contextNode[this.permanentType].connected) {
-                        this.agentClass.connectAgents((err) => {
-                            if (err)
-                                throw this.error('disconnection', err)
-                        }, this.agentClass.contextNode[this.permanentType].connected, this.agentClass.contextNode[this.permanentType], false)
-                    }
-                }
-                if (this.parentElement)
-                    this.parentElement.removeChild(this)
-                delete this.agentClass.contextNode[this.permanentType]
-            }
-
             title(elemTitle) {
                 if (!this.permanentType) {
                     this.permanentType = elemTitle
@@ -336,6 +322,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }, 100)
                 }
             }
+            
             error(msg, err) {
                 console.error(msg, err);
             }
@@ -344,6 +331,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 setTimeout(() => {
                     data.click()
                 }, 100)
+            }
+
+            removeCall(data) {
+                if (this.type !== 'source' && this.type !== 'stream') {
+                    if (this.agentClass.contextNode[this.permanentType].connected) {
+                        this.agentClass.connectAgents((err) => {
+                            if (err)
+                                throw this.error('disconnection', err)
+                        }, this.agentClass.contextNode[this.permanentType].connected, this.agentClass.contextNode[this.permanentType], false)
+                    }
+                }
+                if (this.parentElement)
+                    this.parentElement.removeChild(this)
+                delete this.agentClass.contextNode[this.permanentType]
             }
         }
         window.customElements.define(audioAgentConnector.is, audioAgentConnector);

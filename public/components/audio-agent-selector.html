@@ -34,7 +34,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <section>
                 <aside>
                     <paper-dropdown-menu class="custom custom2" label="[[label]]">
-                        <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
+                        <paper-listbox id="listBox" slot="dropdown-content" class="dropdown-content" selected="0">
                             <template is="dom-repeat" items="{{options}}" as="option" mutable-data="true">
                                 <paper-item on-click="changeToOne" id="[[option.id]]" value=[[option.name]]>
                                     [[option.name]]
@@ -75,8 +75,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             { id: 'gain', name: 'Gain' },
                             { id: 'wave-shaper', name: 'Distortion' },
                             { id: 'panner', name: 'Panner' },
-                            { id: 'listner', name: 'Listner' },                             
-                            { id: 'dynanmicsConpressor', name: 'Compressor' },                          
+                            { id: 'listner', name: 'Listner' },
+                            { id: 'dynanmicsConpressor', name: 'Compressor' },
                             { id: 'delay', name: 'Delay' },
                             { id: 'biquad-filter', name: 'Biquad Filter' },
                             { id: 'convolver', name: 'Reverb' },
@@ -89,10 +89,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
             changeToOne(data) {
-                this.value = data.model.__data.option.id
-                setTimeout(() => {
-                    this.value = 'agents'
-                }, 100)
+                if (data.model.__data.option.id !== 'agents') {
+                    this.value = data.model.__data.option.id
+                    setTimeout(() => {
+                        this.value = 'agents'
+                        this.$.listBox.__data.items[0].click()
+                    }, 100)
+                }
             }
         }
         window.customElements.define(audioAgentSelector.is, audioAgentSelector);
