@@ -111,7 +111,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <section>
                     <paper-tabs selected="0" scrollable sellect$="[[sellect]]" class="diferernt">
                         <template is="dom-repeat" items="{{sources}}" as="source" mutable-data="true">
-                            <paper-tab on-click="connectoTo">
+                            <paper-tab on-click="connecTo">
                                 [[source.name]]
                             </paper-tab>
                         </template>
@@ -159,7 +159,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         } else {
                             arr.push({ name: event.detail.name, type: event.detail.type })
                         }
-                        console.log('source', this.connected.sourceName, event.detail.name)
+                     //   console.log('source', this.connected.sourceName, event.detail.name)
                         this.sources = arr
                     }, 100)
                 }, false)
@@ -182,9 +182,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                             }
                         }
-                        console.log('remove-source', this.connected.sourceName, event.detail.name)
+                       // console.log('remove-source', this.connected.sourceName, event.detail.name)
                         this.analizer(evt, true)
-                        this.connectoTo(evt, true)
+                        this.connecTo(evt, true)
 
                     }
                     for (let i = 0; i < arr.length; i++) {
@@ -193,7 +193,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         }
                     }
                     this.sources = arr2.length < 1 ? [''] : arr2
-                    console.log(this.sources)
+                   // console.log(this.sources)
                 })
             }
 
@@ -289,9 +289,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            connectoTo(event, kill) {
-                let dest = this.agentClass.sourceNode[event.model.__data.source.name] || this.agentClass.contextNode[event.model.__data.source.name]
-                console.log('dest', dest, event.model.__data.source.name, event.model.__data.source.type)
+            connecTo(event, kill) {
+                let dest = this.agentClass.sourceNode[event.model.__data.source.name] 
+              //  console.log('dest', dest, event.model.__data.source.name, this.agentClass.sourceNode, this.agentClass.sourceNode[event.model.__data.source.name] )
                 if (this.connected.source === false && kill !== true) {
                     this.connectMe(event.model.__data.source.name, dest)
                 } else
@@ -319,6 +319,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             disconnectMe(name, dest, kill) {
+                console.log(name, dest, kill)
                 this.agentClass.connectAgents((err) => {
                     if (err) { throw this.error('connector ', err); return }
                     this.connected.source = false

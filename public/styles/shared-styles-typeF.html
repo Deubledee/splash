@@ -1,6 +1,6 @@
 <dom-module id="shared-styles-typeF">
     <template>
-        <style>
+        <style include="shared-styles-dropdown">
             article input[type=range] {
                 cursor: pointer;
                 margin-top: 14px;
@@ -11,7 +11,10 @@
             article label[for=range] span {
                 color: #64bd9b;
                 font-size: 11px;
-                font-weight: bold
+                font-weight: bold;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             article input[type=range]::-webkit-slider-thumb {
@@ -83,22 +86,34 @@
             .labelforvol {
                 position: relative;
                 left: -3px;
+                letter-spacing: 1px;
                 color: var(--app-type-labelforvol-color);
+                letter-spacing: 1px;
                 top: -15px;
                 border-radius: var(--app-standart-border-radius);
                 padding: 3px;
                 font-size: var(--app-type-labelforvol-font-size);
                 text-shadow: var(--app-type-labelforvol-text-shadow);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
             }
 
             .labelforvol[rEady] {
                 background-color: var(--app-type-labelforvol-Ready-background-color);
                 font-size: var(--app-type-labelforvol-font-size);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .labelforvol[waiting] {
                 background-color: var(--app-type-labelforvol-waiting-background-color);
                 font-size: var(--app-type-labelforvol-font-size);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             input {
@@ -222,6 +237,10 @@
             paper-input.diferent {
                 --paper-input-container-label: {
                     color: var(--app-color);
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+
                 }
                 ;
                 --paper-input-container-input: {

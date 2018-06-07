@@ -14,14 +14,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             :host { width: 100%; margin-right: var(--app-standart-border-radius); } article { box-shadow: var( --app-type-gain-box-shadow);
             border-radius: var(--app-standart-border-radius); margin-top: 6px; width: 164px; background-color: var(--app-primary-background-color);
             padding-left: 9px; display: flex; flex-flow: column; } iron-input { flex-basis: 25px; } span, label[for=range]
-            { color: var(--app-color) } .open[open]{height: auto} audio{width: 128px} paper-icon-button {color: var(--app-color)}
+            { color: var(--app-color) } .open[open]{height: auto} audio{width: 128px} paper-icon-button {color: var(--app-color)}div[inline]
+            { display: flex; flex-flow: row; box-sizing: border-box; padding: 2px; } button { height: 24px; margin-top: 6px
+            }label[for="range"] { width: 90px; margin-top: 7px }
         </style>
 
         <article>
-            <label for="range">[[elemTitle]]
+            <div inline>
+                <label for="range" title="[[elemTitle]]">[[elemTitle]]</label>
                 <paper-icon-button icon="input" title="[[type]]"></paper-icon-button>
                 <button on-click="removeCall"> x </button>
-            </label>
+            </div>
             <section id="title" class="open" open$="[[!open]]">
                 <paper-input class="diferent" title="Elapsed time" label="Elapsed" value="{{Elapsed}}">
                 </paper-input>
@@ -169,7 +172,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }, 500)
             }
 
-             gumMe() {
+            gumMe() {
                 if (this.promisse === true) {
                     this.gUM.getUserMedia(this.constraints)
                         .then((this.success).bind(this))
@@ -195,11 +198,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             removeCall() {
-                window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
-                window.dispatchEvent(new CustomEvent('remove-source', { detail: { name: this.elemTitle, type: this.type } }))
-                this.parentElement.removeChild(this)
-                delete this.agentClass.sourceNode[this.elemTitle]
-                console.log(this, this.parentElement)
+                if (this.agentClass.sourceNode[this.elemTitle]) {
+                    window.dispatchEvent(new CustomEvent('remove-source', { detail: { name: this.elemTitle, type: this.type } }))
+                    setTimeout(() => {
+                        this.agentClass.removeAgents(() => {
+                            this.parentElement.removeChild(this)
+                        }, 'sourceNode', this.elemTitle)
+                    }, 100)
+                } else {
+                    this.parentElement.removeChild(this)
+                    window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                }
             }
         }
         window.customElements.define(audioInputSource.is, audioInputSource);

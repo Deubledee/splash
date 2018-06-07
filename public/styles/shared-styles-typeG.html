@@ -1,6 +1,6 @@
 <dom-module id="shared-styles-typeG">
     <template>
-        <style>
+        <style include="shared-styles-dropdown">
             article {
                 width: var(--app-type-gain-width);
                 margin-top: var(--app-type-gain-margin-top);
@@ -30,6 +30,9 @@
                 font-family: var(--app-type-gain-font-family);
                 font-size: var(--app-type-gain-font-size);
                 margin-bottom: var(--app-standart-border-radius);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             paper-button,
@@ -90,6 +93,9 @@
             paper-input.diferent {
                 --paper-input-container-label: {
                     color: var(--app-color);
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 ;
                 --paper-input-container-input: {

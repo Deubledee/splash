@@ -27,15 +27,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             none } paper-icon-button[icon="query-builder"] { display: block } #progress { background-color: transparent;
             height: 0px; width: 0px } #progress[progress] { background-color: rgb(255, 0, 0); height: 1px; } paper-icon-button[typer]
             { display: block; position: relative; top: -6px } span, label[for=range] { color: var(--app-color); display:
-            inline-flex } div { display: inline-flex; height: 18px; } article button { position: absolute; right: 21px; }
-            #apllyNow{ display: none}
+            inline-flex } div { display: inline-flex; height: 18px; } article button { height: 24px; }
+            #apllyNow{ display: none} div[inline]{ display: flex; flex-flow: row; box-sizing: border-box; padding: 2px;}
+            label[for="range"] {width: 90px; height: 26px;}
         </style>
         <article>
-            <div>
+            <div inline>
                 <label for="range">
                     [[elemTitle]]
-                    <paper-icon-button typer icon="forward" title="[[type]]"></paper-icon-button>
                 </label>
+                <paper-icon-button typer icon="forward" title="[[type]]"></paper-icon-button>
                 <button on-click="removeCall"> x </button>
             </div>
             <section id="title" class="open" open$="[[!open]]">
@@ -56,18 +57,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         </paper-icon-button>
                         <paper-icon-button on-click="toggleRecording" icon="radio-button-unchecked" record$="[[!record]]" title="toggle recording">
                         </paper-icon-button>
-                        <paper-icon-button icon="av:play-arrow" record$="[[record]]" disable$="[[disable]]" title="">
+                        <paper-icon-button icon="input" record$="[[record]]" disable$="[[disable]]" title="">
                         </paper-icon-button>
                         <paper-icon-button icon="file-download" record$="[[record]]" disable$="[[disable]]" title="">
                         </paper-icon-button>
-                        <paper-icon-button on-click="playRecording" icon="av:play-arrow" play$="[[play]]" title="play recorded - opens new Blob Source">
+                        <paper-icon-button on-click="playRecording" icon="input" play$="[[play]]" title="play recorded - opens new Blob Source">
                         </paper-icon-button>
                         <paper-icon-button on-click="downloadRecording" icon="file-download" play$="[[play]]" title="download recorded">
                         </paper-icon-button>
                     </paper-item>
                 </aside>
                 <div id="progress" progress$="[[progress]]"></div>
-                <audio-aplly-with id="aplyWith">
+                <audio-aplly-with id="aplyWith" agent-class="[[agentClass]]" title-funcion="[[titleFuncion]]">
                     <paper-button slot="applyButton" id="apllyNow" on-click="toggleRecording"></paper-button>
                 </audio-aplly-with>
             </section>
@@ -370,7 +371,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 timeStamp = timeStamp.slice(timeStamp.length - 6, timeStamp.length)
                 window.dispatchEvent(new CustomEvent('read-blob', {
                     detail:
-                        { blob: this.blob, title: this.elemTitle + '.' + timeStamp, source: 'url-source' }
+                        { blob: this.blob, title: this.elemTitle + '.' + timeStamp, source: 'blob-source' }
                 }))
             }
 
@@ -387,6 +388,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             submit() {
                 if (this.$.titleInput.value.length > 0) {
+                    console.log('setting...')
                     this.elemTitle = this.elemTitle.split(' ').join('')
                     this.agentClass.gain((err, mixer) => {
                         if (typeof err === 'object') {
@@ -401,13 +403,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         }
                         if (err === false) {
                             window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
+                            this.$.aplyWith.elemTitle = this.elemTitle
                             let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
-                            setTimeout(() => {
-                                this.$.aplyWith.agentClass = this.agentClass
-                                this.$.aplyWith.titleFuncion = this.titleFuncion
-                                this.$.aplyWith.elemTitle = this.elemTitle
-                            }, 500)
-                            window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                           // window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
                             this.open = false
                             this.recorder = new WebAudioRecorder(mixer, {
                                 workerDir: '/public/scripts/'
@@ -423,17 +421,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             removeCall() {
-                if (this.open === false) {
-                    this.agentClass.revoveElemTitle(() => {
-                        window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                        delete this.agentClass.streamNode[this.elemTitle]
-                        this.parentElement.removeChild(this)
-                        window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
-                    }, this.elemTitle)
-                    //  console.log(this, this.parentElement)
-                } else {
-                    alert('insert tytle to remove item')
-                }
+                this.agentClass.revoveElemTitle(() => {
+                    window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                    delete this.agentClass.streamNode[this.elemTitle]
+                    this.parentElement.removeChild(this)
+                    window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
+                }, this.elemTitle)
             }
         }
         window.customElements.define(audioRecorder.is, audioRecorder);

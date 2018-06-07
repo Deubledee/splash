@@ -8,45 +8,43 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<dom-module id="audio-url-source">
+<dom-module id="audio-file-source">
     <template>
         <style include="shared-styles-typeG">
             :host { width: 100%; margin-right: var(--app-standart-border-radius); } article { box-shadow: var( --app-type-gain-box-shadow);
             border-radius: var(--app-standart-border-radius); margin-top: 6px; width: 164px; background-color: var(--app-primary-background-color);
-            padding-left: 9px; display: flex; flex-flow: column; } iron-input { flex-basis: 25px; } span, label[for=range]
-            { color: var(--app-color) } .open[open]{height: auto} audio{width: 128px} paper-icon-button {color: var(--app-color)}
-            paper-item[sellected] { background-color: chartreuse } aside[apllyWith] { border-top: 0.4px solid #b6b6b6b3 }
-            section[list-box-hiden] { display: none } section[list-box-hiden][boxShow] { display: block } audio{width: 165px}
-            #apllyNow{ display: none }
+            padding-left: 9px; display: flex; flex-flow: column; min-height: 107px; } audio { width: 128px } paper-icon-button
+            { color: var(--app-color) } aside[apllyWith] { border-top: 0.4px solid #b6b6b6b3 } section[list-box-hiden] {
+            display: none } section[list-box-hiden][boxShow] { display: block } audio { width: 165px } #apllyNow { display:
+            none } input { display: none } label { color: var(--app-color); cursor: pointer; } paper-button.diferent { box-shadow:
+            var(--app-toolbar-box-shadow) } label[for="range"] { width: 90px; margin-top: 7px } div[inline] { display: flex;
+            flex-flow: row; box-sizing: border-box; padding: 2px; } section[boxShow] { display: none } button { height: 24px;
+            margin-top: 6px }
         </style>
-
         <article>
-            <label for="range">[[elemTitle]]
+            <div inline>
+                <label for="range" title="[[elemTitle]]">[[elemTitle]] [[loading]]</label>
                 <paper-icon-button icon="input" title="[[type]]"></paper-icon-button>
                 <button on-click="removeCall"> x </button>
-            </label>
-            <section id="title" class="open" open$="[[!open]]">
-                <section id="art">
-                </section>
+            </div>
+            <section id="title" boxShow$="[[boxShow]]">
+                <paper-button id="art" class="diferent">
+                    <label id='label' for="input">Insert File</label>
+                </paper-button>
+                <input id="input" aria-labelledby="" type="file" on-change="submit" class="diferent"></input>
+            </section>
+            <section id="title" boxShow$="[[!boxShow]]">
                 <audio-player slot="applyButton" id="player" active="[[apllyWith]]" audio="{{source}}" elemTitle="[[elemTitle]]"></audio-player>
-                <audio-aplly-with id="aplyWith">
+                <audio-aplly-with id="aplyWith" agent-class="[[agentClass]]" title-funcion="[[titleFuncion]]" elem-title="[[elemTitle]]">
                     <paper-button slot="applyButton" id="apllyNow" on-click="apllyNow"></paper-button>
                 </audio-aplly-with>
             </section>
-            <div class="open divtitle-area" open$="[[open]]">
-                <section id="title" class="open" open$="[[open]]">
-                    <paper-input class="diferent" id="titleInput" min="0" max="5" step="0.5" label="new title" title="new title" value="{{elemTitle}}">
-                    </paper-input>
-                    <paper-button on-click="submit" raised>aplly title </paper-button>
-                </section>
-            </div>
         </article>
-        </nav>
     </template>
     <script>
-        class audioUrlSource extends Polymer.Element {
+        class audioFileSource extends Polymer.Element {
             static get is() {
-                return 'audio-url-source';
+                return 'audio-file-source';
             }
             constructor() {
                 super();
@@ -76,9 +74,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         notify: true,
                         value: 'Source'
                     },
+                    file: {
+                        type: Object
+                    },
                     timeView: {
                         type: Boolean,
                         value: true
+                    },
+                    loading: {
+                        type: String
                     },
                     Elapsed: {
                         type: String,
@@ -124,7 +128,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }
                 }
             }
-            
+
             apllyNow() {
                 this.$.player.click()
                 let that = this.agentClass
@@ -148,43 +152,53 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             submit(event) {
-                var url, audio
-                if (event.title) {
-                    this.$.titleInput.value = event.title.split(' ').join('')
-                    url = URL.createObjectURL(event.blob)
-                    this.$.player.url = url
+                var fileName = event.target.value.split('\\').pop()
+                let input = event.target;
+                let reader = new FileReader();
+                reader.onprogress = evt => {
+                    //console.log('onprogress', evt)
+                    this.loading = 'loading...'
                 }
+                reader.onload = () => {
+                    var dataURL = reader.result;
+                    this.$.player.url = dataURL;
+                    setTimeout(() => {
+                        this.loading = 'loaded...'
+                        setTimeout(() => {
+                            this.loading = ''
+                            this.elemTitle = fileName
+                        }, 500)
+                    }, 1000)
+                };
+                reader.readAsDataURL(input.files[0]);
             }
 
             setSource(src) {
-                this.agentClass.setElementSource((err) => {
-                    if (typeof err === 'object') {
-                        throw this.error('input ', err);
-                    } else if (typeof err === 'string') {
-                        this.$.titleInput.value = 'already exists'
-                        setTimeout(() => {
-                            this.$.titleInput.value = ''
-                            this.elemTitle = ''
-                        }, 1000)
-                    }
-                    if (err === false) {
-                        this.elemTitle = this.$.titleInput.value// this.elemTitle.split(' ').join('')
-                        var that = this
-                        window.dispatchEvent(new CustomEvent('connect', { detail: { element: that } }))
-                        window.dispatchEvent(new CustomEvent('elemem-title', {
-                            detail:
-                                { title: this.elemTitle }
-                        }))
-                        setTimeout(() => {
-                            this.$.aplyWith.agentClass = this.agentClass
-                            this.$.aplyWith.titleFuncion = this.titleFuncion
-                            this.$.aplyWith.elemTitle = this.elemTitle
-                        }, 500)                        
-                        window.dispatchEvent(new CustomEvent('source', { detail: { name: this.elemTitle, type: this.type } }))
-                        window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                        this.open = false
-                    }
-                }, this.$.titleInput.value, src)
+                setTimeout(() => {
+                    this.agentClass.setElementSource((err) => {
+
+                        console.log('got here..!!', err)
+                        if (typeof err === 'object') {
+                            throw this.error('input ', err);
+                        } else if (typeof err === 'string') {
+                            this.elemTitle = 'already exists'
+                            setTimeout(() => {
+                                this.elemTitle = ''
+                            }, 1000)
+                        }
+                        if (err === false) {
+                            var that = this
+                            window.dispatchEvent(new CustomEvent('connect', { detail: { element: that } }))
+                            window.dispatchEvent(new CustomEvent('elemem-title', {
+                                detail:
+                                    { title: this.elemTitle }
+                            }))
+                            window.dispatchEvent(new CustomEvent('source', { detail: { name: this.elemTitle, type: this.type } }))
+                            // window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                            this.boxShow = true
+                        }
+                    }, this.elemTitle, src)
+                }, 2000)
             }
 
             error(msg, err) {
@@ -192,16 +206,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             removeCall() {
-                this.agentClass.revoveElemTitle(() => {
+                if (this.agentClass.sourceNode[this.elemTitle]) {
                     window.dispatchEvent(new CustomEvent('remove-source', { detail: { name: this.elemTitle, type: this.type } }))
-                    window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                    window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
-                    delete this.agentClass.sourceNode[this.elemTitle]
+                    setTimeout(() => {
+                        this.agentClass.removeAgents(() => {
+                            this.agentClass.revoveElemTitle(() => {
+                                window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                                window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                                this.$.player.stopSong()
+                                this.parentElement.removeChild(this)
+                            }, this.elemTitle)
+                        }, 'sourceNode', this.elemTitle)
+                    }, 100)
+                } else {
                     this.parentElement.removeChild(this)
-                }, this.elemTitle)
+                    window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                }
             }
         }
-        window.customElements.define(audioUrlSource.is, audioUrlSource);
+        window.customElements.define(audioFileSource.is, audioFileSource);
 
     </script>
 </dom-module>

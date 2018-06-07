@@ -45,7 +45,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </paper-item>
             </section>
             <section id="title" class="inputin open" open$="[[!open]]">
-                <audio-aplly-with id="aplyWith">
+                <audio-aplly-with id="aplyWith" agent-class="[[agentClass]]" title-funcion="[[titleFuncion]]">
                     <paper-button slot="applyButton" id="apllyNow" on-click="apllyNow">aplly now</paper-button>
                 </audio-aplly-with>
             </section>
@@ -122,12 +122,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             removeCall() {
-                this.agentClass.revoveElemTitle(() => {
+                if (this.agentClass.contextNode[this.elemTitle]) {
                     window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
-                    window.dispatchEvent(new CustomEvent('apllywith', {}))
-                    delete this.agentClass.contextNode[this.elemTitle]
+                    this.agentClass.removeAgents(() => {
+                        this.agentClass.revoveElemTitle(() => {
+                            window.dispatchEvent(new CustomEvent('apllywith', {}))
+                            // delete this.agentClass.contextNode[this.elemTitle]
+                            this.parentElement.removeChild(this)
+                        }, this.elemTitle)
+                    }, 'contextNode', this.elemTitle)
+                } else {
                     this.parentElement.removeChild(this)
-                }, this.elemTitle)
+                    window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                }
             }
 
             submit(event) {
@@ -139,12 +146,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             window.dispatchEvent(new CustomEvent('connect', { detail: { element: that } }))
                             this.setContextNode(this.elemTitle)
                             window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
-                            setTimeout(() => {
-                                this.$.aplyWith.agentClass = this.agentClass
-                                this.$.aplyWith.titleFuncion = this.titleFuncion
-                                this.$.aplyWith.elemTitle = this.elemTitle
-                                window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                            }, 500)
+                            this.$.aplyWith.elemTitle = this.elemTitle
                             this.open = false
                             this.show = true
                         } else {
@@ -188,7 +190,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this.waiting = false
                         }, 3000)
                     }
-                }, this.contextNode, 'overSample', 'curve', this.overSample + 'x', this.amount)
+                }, this.contextNode, 'overSample', 'curve', this.overSample + 'x', this.amount, false)
             }
         }
         window.customElements.define(audioWaveShaper.is, audioWaveShaper);

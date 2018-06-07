@@ -8,23 +8,16 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="./audio-set-target-at-time.html">
-<link rel="import" href="./audio-set-value-curve-at-time.html">
-<link rel="import" href="./audio-set-func-at-time.html">
-<dom-module id="audio-functions">
 
+<dom-module id="audio-panner-function">
     <template>
         <style include="shared-styles-dropdown">
             :host {
-                width: 100%;
                 margin-right: 0px;
             }
 
-            paper-dropdown-menu.custom2 {
-                background-color: var(--app-primary-background-color);
-                --paper-input-container: {
-                    height: auto;
-                }
+            paper-dropdown-menu.custom {
+                background-color: initial;
             }
         </style>
         <section>
@@ -45,9 +38,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
     </template>
     <script>
-        class audioFunctions extends Polymer.Element {
+        class audioPannerFunction extends Polymer.Element {
             static get is() {
-                return 'audio-functions';
+                return 'audio-panner-function';
             }
             constructor() {
                 super();
@@ -65,24 +58,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String
                     },
                     agentClass: {
-                        type: Object
+                        type: Object,
+                        value: {}
                     },
                     value: {
                         type: String,
-                        value: 'add function',
+                        value: 'add pann',
                         notify: true,
-                        observer: 'addFunction'
+                        // observer: 'pann'
                     },
                     options: {
                         value: [
-                            { id: 'start', name: 'functions' },
-                            { id: 'setValueAtTime', name: 'Value AtTime', count: 0 },
-                            { id: 'audio-set-target-at-time', name: 'Target AtTime', count: 0 },
-                            { id: 'audio-set-value-curve-at-time', name: 'Curve Wave', count: 0 },
-                            { id: 'exponentialRampToValueAtTime', name: 'Exponential Ramp', count: 0 },
-                            { id: 'linearRampToValueAtTime', name: 'Linear Ramp', count: 0 },
-                            { id: 'cancelScheduledValues', name: 'Cancel Scheduled', count: 0 },
-                            { id: 'cancelAndHoldAtTime', name: 'Cancel & Hold', count: 0 }
+                            { id: 'Start', name: 'Panns' },
+                            { id: 'panner-set-roll-model', name: 'Panning Model', count: 0 },
+                            { id: 'panner-set-function', name: 'Position Adv', count: 0 },
+                            { id: 'panner-set-function', name: 'Orientation Adv', count: 0 },
+                            { id: 'panner-set', name: 'Position Spl', count: 0 },
+                            { id: 'panner-set', name: 'Orientation Spl', count: 0 },
+                            { id: 'panner-set-value', name: 'Cone', count: 0 },
+                            { id: 'panner-set-value', name: 'Distance', count: 0 },
+                            { id: 'panner-set-roll-model', name: 'Roll off', count: 0 },
                         ]
                     },
                 }
@@ -91,24 +86,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _log(data) {
                 console.log(data)
             }
+
             addFunction(data) {
-            //    console.log(data)
-                if (data.model && data.model.__data.option.id !== 'start') {
-                    let that = this.agentClass
-                    if (data.model.__data.option.id === 'audio-set-target-at-time' ||
-                        data.model.__data.option.id === 'audio-set-value-curve-at-time') {
-                        var element = document.createElement(data.model.__data.option.id)
-                    } else {
-                        var element = document.createElement('audio-set-func-at-time')
-                    }                    
-                  //  console.log(data.model)//.__data.option
+                if (data.model && data.model.__data.option.id !== 'Start') {
+                    if (data.model.__data.option.id === 'panner-set-function' || data.model.__data.option.id === 'panner-set') {
+                        var element = document.createElement('audio-' + data.model.__data.option.id)
+                        element.typeFuncion = data.model.__data.option.name.slice(0, data.model.__data.option.name.length - 4)
+                    }
+                    if (data.model.__data.option.id === 'panner-set-value' || data.model.__data.option.id === 'panner-set-roll-model') {
+                        var element = document.createElement('audio-' + data.model.__data.option.id)
+                        element.typeFuncion = data.model.__data.option.name.split(' ').join('')
+                    }
+                   
                     var arr = this.options
                     arr[data.model.index].count += 1
                     this.options = arr
                     element.elemTitle = this.elemTitle
-                    element.agentClass = that
-                    element.contextNode = that.contextNode[this.elemTitle]
-                    element.typeFuncion = data.model.__data.option.id
+                    element.agentClass = this.agentClass
+                    element.contextNode = this.agentClass.contextNode[this.elemTitle]
                     element.titleFuncion = data.model.__data.option.name + ' ' + (data.model.__data.option.count)
                     element.type = this.type
                     this.firstElementChild.append(element)
@@ -118,7 +113,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
         }
-        window.customElements.define(audioFunctions.is, audioFunctions);
+        window.customElements.define(audioPannerFunction.is, audioPannerFunction);
 
     </script>
 </dom-module>

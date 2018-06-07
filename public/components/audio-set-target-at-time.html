@@ -50,7 +50,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </aside>
             </section>
             <section class="inputin" show$="[[show]]">
-                <audio-aplly-with id="aplyWith">
+                <audio-aplly-with id="aplyWith" agent-class="[[agentClass]]" title-funcion="[[titleFuncion]]" elem-title="[[elemTitle]]">
                     <paper-button slot="applyButton" id="apllyNow" on-click="apllyNow">aplly now</paper-button>
                 </audio-aplly-with>
             </section>
@@ -66,11 +66,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             ready() {
                 super.ready()
-                setTimeout(() => {
-                    this.$.aplyWith.agentClass = this.agentClass
-                    this.$.aplyWith.titleFuncion = this.titleFuncion
-                    this.$.aplyWith.elemTitle = this.elemTitle
-                }, 500)
             }
             static get properties() {
                 return {
@@ -194,7 +189,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this.waiting = false
                         }, 3000)
                     }
-                }, this.contextNode, this.type, 'setTargetAtTime', parseFloat(this.bindVol), parseFloat(this.bindStart), parseFloat(this.bindConst))
+                }, this.contextNode, this.type, 'setTargetAtTime', parseFloat(this.bindVol), parseFloat(this.bindStart), parseFloat(this.bindConst), true)
             }
         }
         window.customElements.define(audioSetTargetAtTime.is, audioSetTargetAtTime);

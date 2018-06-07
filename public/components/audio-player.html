@@ -62,12 +62,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             paper-icon-button[looping] {
                 color: rgb(58, 210, 236)
             }
+
+            audio-svg-progress{
+                position: relative;
+                left: 9px;
+            }
         </style>
         <nav>
             <paper-item>
                 <paper-item-body two-line>
-                    <paper-input class="diferent" title="Elapsed time" label="Elapsed" value="{{Elapsed}}">
+                    <paper-input class="diferent" title="Elapsed time" label="Elapsed" value="[[Elapsed]] [[duration]]">
                     </paper-input>
+                      
                 </paper-item-body>
             </paper-item>
             <audio-svg-progress id="progress" percentage="{{currentTime}}"></audio-svg-progress>
@@ -159,8 +165,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             setElement(url) {
                 this.audio = new Audio(url)
+               // console.log('loaded')
                 this.audio.controls = false
                 this.audio.controlsList = 'nodownload'
+                this.audio.crossOrigin = 'anonymous'
             }
 
             changeThis() {
@@ -171,15 +179,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if (this.active === false) {
                     this.play()
                 } else {
-                    this.pause()
+                    this.stopSong()
                 }
             }
 
             play() {
                 this.audio.play();
                 this.pause = true;
-                this.active = true;                
-                this.audio.ontimeupdate = event => {
+                this.active = true;
+                this.audio.ontimeupdate = event => {                   
                     this.updateTime(event)
                     let figure = parseInt(this.audio.currentTime / this.duration * 100)
                     let figure1 = (this.audio.currentTime / this.duration * 100)  //11 = radius //parseInt(parseInt(this.Elapsed.split(':').join(''))                   
@@ -194,7 +202,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }
                 }
                 this.audio.onended = event => {
-                    this.Pause()
+                    this.stopSong()
                 }
             }
 

@@ -99,17 +99,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 this.$.titleInput.value = ''
                             }, 1000)
                         }
-                    }, this.elemTitle, 0.5, 0)
+                    }, this.elemTitle, 0, 0)
                 }
             }
 
             removeCall() {
-                this.agentClass.revoveElemTitle(() => {
-                    window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
-                    window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
-                    delete this.agentClass.contextNode[this.elemTitle]
+                if (this.agentClass.contextNode[this.elemTitle]) {
+                    this.agentClass.removeAgents(() => {
+                        this.agentClass.revoveElemTitle(() => {
+                            //   window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                            setTimeout(() => {
+                                window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                                window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                                //  delete this.agentClass.contextNode[this.elemTitle]
+                            }, 500)
+                            this.parentElement.removeChild(this)
+                        }, this.elemTitle)
+                    }, 'contextNode', this.elemTitle)
+                } else {
                     this.parentElement.removeChild(this)
-                }, this.elemTitle)
+                    window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
+                }
             }
         }
         window.customElements.define(audioGain.is, audioGain);

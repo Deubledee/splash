@@ -148,10 +148,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 let itIs = []
                 arr1.map(item => {
                     for (let i = 0; i < arr2.length; i++) {
-                        if (item.name === arr2[i].name && item.title === this.elemTitle) {
+                        if (item.name === arr2[i].name && item.titleFuncion === this.titleFuncion) {
                             this.sellect(this.$.listBox.children, arr2[i].name)
                         }
-                        if (item.name !== arr2[i].name && item.title === this.elemTitle) {
+                        if (item.name !== arr2[i].name && item.titleFuncion === this.titleFuncion) {
                             this.unSellect(this.$.listBox.children, arr2[i].name)
                         }
                     }

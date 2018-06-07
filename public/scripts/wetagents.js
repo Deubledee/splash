@@ -18,7 +18,10 @@ class WetAgents {
                 sourceName) {
                 if (stream === 0) { done(false); return }
                 this.sourceNode[sourceName] = this.context.createMediaStreamSource(stream);
-                done(false, stream)
+                setTimeout(() => {
+                    this.sourceNode[sourceName].onRemove = () => { }
+                    done(false, stream)
+                }, 100)
                 return
             } else {
                 done(sourceName + ' already exists or no argumet value!!')
@@ -36,6 +39,9 @@ class WetAgents {
                 this.contextNode[sourceName] === undefined &&
                 sourceName) {
                 this.sourceNode[sourceName] = this.context.createMediaElementSource(mediaElement);
+                setTimeout(() => {
+                    this.sourceNode[sourceName].onRemove = () => { }                    
+                }, 100)
                 done(false)
                 return
             } else {
@@ -68,7 +74,10 @@ class WetAgents {
                 this.analyserNode[nodename].minDecibels = -90;
                 this.analyserNode[nodename].maxDecibels = -10;
                 this.analyserNode[nodename].smoothingTimeConstant = 0.85;
-                done()
+                setTimeout(() => {
+                    this.analyserNode[nodename].onRemove = {}
+                    done()
+                }, 100)
             } else {
                 done(nodename + ' already exists or no argumet value!!')
             }
@@ -84,7 +93,10 @@ class WetAgents {
                 gainNode) {
                 if (destination !== true) {
                     this.contextNode[gainNode] = this.context.createGain()
-                    done()
+                    setTimeout(() => {
+                        this.contextNode[gainNode].onRemove = () => { }
+                        done()
+                    }, 100)
                 } else {
                     this.setStreamDestination((state, node) => {
                         done(state, node)
@@ -106,9 +118,12 @@ class WetAgents {
                 this.contextNode[waveName] === undefined &&
                 waveName && overS && amount) {
                 this.contextNode[waveName] = this.context.createWaveShaper();
-                done()
                 this.contextNode[waveName].oversample = `${overS}x`;
                 this.contextNode[waveName].curve = this.makeDistortionCurve(parseInt(amount));/* distortionCurve(amount) ||*/
+                setTimeout(() => {
+                    this.contextNode[waveName].onRemove =() => { }
+                    done()
+                }, 100)
             } else {
                 done('already exists')
             }
@@ -132,6 +147,35 @@ class WetAgents {
         return curve;
     };
 
+    panner(done, pann) {
+        try {
+            if (this.sourceNode[pann] === undefined &&
+                this.contextNode[pann] === undefined && pann) {
+                this.contextNode[pann] = this.context.createPanner();
+                setTimeout(() => {
+                    this.contextNode[pann].onRemove = () => { }
+                    done(null)
+                }, 100)
+            } else {
+                done('already exists')
+            }
+        } catch (err) {
+            done('panner error')
+            throw new Error(err);
+        }
+
+    }
+
+    listner(listen, forwardX, forwardY, forwardZ, upX, upY, upZ) {
+        this.contextNode[listen].forwardX.value = forwardX || 0;
+        this.contextNode[listen] = this.context.listener;
+        this.contextNode[listen].forwardY.value = forwardY || 0;
+        this.contextNode[listen].forwardZ.value = forwardZ || -1;
+        this.contextNode[listen].upX.value = upX || 0;
+        this.contextNode[listen].upY.value = upY || 1;
+        this.contextNode[listen].upZ.value = upZ || 0;
+    }
+
     connectAgents(done, agent1, agent2, connect) {
         try {
             if (connect == true) {
@@ -147,29 +191,45 @@ class WetAgents {
         }
     }
 
-    setAgentParamTo(done, agent, param1, param2, to, to1, to2) {
+    setAgentParamTo(done, agent, param1, param2, to, to1, to2, func) {
         try {
-            if (param1 !== 'overSample') {
+            if (func === true) {
                 agent[param1][param2](to, this.context.currentTime + to1, to2)
+                console.log(param1, param2, to, to1, to2, func)
                 done()
             } else {
-                agent[param1] = to
-                agent[param2] = param2 === 'curve' ? this.makeDistortionCurve(parseInt(to1)) : to1
+                console.log(param1, param2, to, to1, to2, func)
+                if (typeof agent[param1] !== 'function') {
+                    if (param2 !== null) {
+                        agent[param2] = param2 === 'curve' ? this.makeDistortionCurve(parseInt(to1)) : to1
+                    } else {
+                        agent[param1] = to
+                    }
+                } else {
+                    agent[param1](to, to1, to2)
+                }
                 done()
             }
-            agent.changed = true
+
+            //  agent.changed = true
         }
         catch (err) {
             done(err)
         }
     }
 
+    removeAgents(done, context, agent) {
+        console.log(context, agent)
+        this[context][agent].onRemove()
+        delete this[context][agent]
+        done()
+    }
+
     setApplicable(done, obj) {
         if (obj.elemTitle !== undefined) {
             if (!this.applicables[obj.elemTitle]) {
                 this.applicables[obj.elemTitle] = obj
-                ///   
-                //console.log('create', this.applicables[obj.elemTitle])
+                // console.log('create', this.applicables[obj.elemTitle])
             } else {
                 this.applicables[obj.elemTitle].arr.push(obj.arr[0])
                 // console.log('add', this.applicables[obj.elemTitle])
@@ -458,33 +518,7 @@ class WetAgents {
         this.source = this.context.createBufferSource();
     }
     //https://developer.mozilla.org/en-US/docs/Web/API/PannerNode
-    panner(pann, panningModel, distanceModel, refDistance, maxDistance, rolloffFactor, coneInnerAngle, coneOuterAngle, coneOuterGain, orientationX, orientationY, orientationZ, positionX, positionY, positionZ) {
-        this.contextNode[pann] = this.context.createPanner();
-        this.contextNode[pann].panningModel = panningModel || 'HRTF';
-        this.contextNode[pann].distanceModel = distanceModel || 'inverse';
-        this.contextNode[pann].refDistance = refDistance || 1;
-        this.contextNode[pann].maxDistance = maxDistance || 10000;
-        this.contextNode[pann].rolloffFactor = rolloffFactor || 1;
-        this.contextNode[pann].coneInnerAngle = coneInnerAngle || 360;
-        this.contextNode[pann].coneOuterAngle = coneOuterAngle || 0;
-        this.contextNode[pann].coneOuterGain = coneOuterGain || 0;
-        this.contextNode[pann].orientationX.value = orientationX || 1;
-        this.contextNode[pann].orientationY.value = orientationY || 0;
-        this.contextNode[pann].orientationZ.value = orientationZ || 0;
-        this.contextNode[pann].positionX = positionX || 1
-        this.contextNode[pann].positionY = positionY || 0
-        this.contextNode[pann].positionZ = positionZ || 0
-    }
 
-    listner(listen, forwardX, forwardY, forwardZ, upX, upY, upZ) {
-        this.contextNode[listen].forwardX.value = forwardX || 0;
-        this.contextNode[listen] = this.context.listener;
-        this.contextNode[listen].forwardY.value = forwardY || 0;
-        this.contextNode[listen].forwardZ.value = forwardZ || -1;
-        this.contextNode[listen].upX.value = upX || 0;
-        this.contextNode[listen].upY.value = upY || 1;
-        this.contextNode[listen].upZ.value = upZ || 0;
-    }
 
     whiteNoise() {
         this.newBuffer('whitenoise', 2)

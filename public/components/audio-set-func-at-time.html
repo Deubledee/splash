@@ -14,8 +14,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             :host { width: 100%; margin-right: 0px; } aside[id=start][notHere]{ display: none } section[list-box-hiden]{ display: none
             } section[list-box-hiden][boxShow]{ display: block } paper-item[sellected] { background-color: chartreuse }
         </style>
-        <app-location route="{{route}}"></app-location>
-        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}" query-params="{{query}}"></app-route>
         <article>
             <nav class="independent">
                 <div>
@@ -46,16 +44,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </template>
             </section>
             <section class="inputin" show$="[[show]]">
-                <audio-aplly-with id="aplyWith">
+                <audio-aplly-with id="aplyWith" agent-class="[[agentClass]]" title-funcion="[[titleFuncion]]" elem-title="[[elemTitle]]">
                     <paper-button slot="applyButton" id="apllyNow" on-click="apllyNow">aplly now</paper-button>
                 </audio-aplly-with>
-            </section>
-            <section list-box-hiden boxShow$="[[boxShow]]" on-click="hidewBox2">
-                <paper-listbox id="listBox" slot="dropdown-content" multi>
-                    <template id="model2" is="dom-repeat" items="{{applicables}}" as="applicable" mutable-data="true">
-                        <paper-item id='[[applicable.name]]' on-click="hidewBox">[[applicable.titleFuncion]]</paper-item>
-                    </template>
-                </paper-listbox>
             </section>
         </article>
     </template>
@@ -106,16 +97,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     },
                     type: {
                         type: String
-                    },
-                    sellected: {
-                        type: Array,
-                        value: []
-                    },
-                    boxShow: {
-                        type: Boolean,
-                        value: false,
-                        notify: true,
-                        reflectToAttribute: true
                     },
                     notHere: {
                         type: Boolean,
@@ -177,12 +158,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
                 if (this.titleFuncion.indexOf('ancel') > 0) {
                     this.notHere = true
-                }
-                setTimeout(() => {
-                    this.$.aplyWith.agentClass = this.agentClass
-                    this.$.aplyWith.titleFuncion = this.titleFuncion
-                    this.$.aplyWith.elemTitle = this.elemTitle
-                }, 500)
+                }                
             }
 
             escape(value) {
@@ -255,7 +231,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 this.waiting = false
                             }, 3000)
                         }
-                    }, this.contextNode, this.type, this.typeFuncion, parseFloat(this.bindVol), parseFloat(this.bindStart))
+                    }, this.contextNode, this.type, this.typeFuncion, parseFloat(this.bindVol), parseFloat(this.bindStart), null, true)
                 }
             }
         }
