@@ -13,18 +13,101 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="audio-wave-shaper">
     <template>
         <style include="shared-styles-typeG">
-            :host { margin-right: var(--app-standart-border-radius); } article { border-radius: var(--app-standart-border-radius); margin-top:
-            6px; width: 164px; background-color: var(--app-primary-background-color); padding-left: 9px; display: flex; flex-flow:
-            column; } span, label[for=range] { color: var(--app-color) } .labelforvol { position: relative; font-weight:
-            600; left: -3px; color: var(--app-type-labelforvol-color); top: 0px; border-radius: var(--app-standart-border-radius);
-            padding: 3px; font-size: var(--app-type-labelforvol-font-size); text-shadow: var(--app-type-labelforvol-text-shadow);
-            } .labelforvol[rEady] { background-color: var(--app-type-labelforvol-Ready-background-color); font-size: var(--app-type-labelforvol-font-size);
-            } .labelforvol[waiting] { background-color: var(--app-type-labelforvol-waiting-background-color); font-size:
-            var(--app-type-labelforvol-font-size); } .open[open] { height: auto } audio { width: 128px } paper-icon-button
-            { color: var(--app-color) } paper-icon-button { display: none } section[list-box-hiden] { display: none } section[list-box-hiden][boxShow]
-            { display: block } paper-item[sellected] { background-color: chartreuse } .inputin { display: none } .inputin
-            aside { position: relative; flex-basis: 84px; top: 9px; } aside[apllyWith] { position: relative; top: 1px; }
-            .inputin[open] { height: 41px; display: inline-flex; flex-flow: row; color: #000000; font-size: 8px; }
+            :host {
+                margin-right: var(--app-standart-border-radius);
+            }
+
+            article {
+                border-radius: var(--app-standart-border-radius);
+                margin-top: 6px;
+                width: 164px;
+                background-color: var(--app-primary-background-color);
+                padding-left: 9px;
+                display: flex;
+                flex-flow: column;
+            }
+
+            span,
+            label[for=range] {
+                color: var(--app-color)
+            }
+
+            .labelforvol {
+                position: relative;
+                font-weight: 600;
+                left: -3px;
+                color: var(--app-type-labelforvol-color);
+                top: 0px;
+                border-radius: var(--app-standart-border-radius);
+                padding: 3px;
+                font-size: var(--app-type-labelforvol-font-size);
+                text-shadow: var(--app-type-labelforvol-text-shadow);
+            }
+
+            .labelforvol[rEady] {
+                background-color: var(--app-type-labelforvol-Ready-background-color);
+                font-size: var(--app-type-labelforvol-font-size);
+            }
+
+            .labelforvol[waiting] {
+                background-color: var(--app-type-labelforvol-waiting-background-color);
+                font-size: var(--app-type-labelforvol-font-size);
+            }
+
+            .open[open] {
+                height: auto
+            }
+
+            audio {
+                width: 128px
+            }
+
+            paper-icon-button {
+                color: var(--app-color)
+            }
+
+            paper-icon-button {
+                display: none
+            }
+
+            section[list-box-hiden] {
+                display: none
+            }
+
+            section[list-box-hiden][boxShow] {
+                display: block
+            }
+
+            paper-item[sellected] {
+                background-color: chartreuse
+            }
+
+            paper-button[slot="applyButton"]{
+                top: 8px;
+            }
+
+            .inputin {
+                display: none
+            }
+
+            .inputin aside {
+                position: relative;
+                flex-basis: 84px;
+                top: 9px;
+            }
+
+            aside[apllyWith] {
+                position: relative;
+                top: 1px;
+            }
+
+            .inputin[open] {
+                height: 41px;
+                display: inline-flex;
+                flex-flow: row;
+                color: #000000;
+                font-size: 8px;
+            }
         </style>
         <article>
             <label for="range">[[elemTitle]]

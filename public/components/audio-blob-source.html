@@ -138,7 +138,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             timeupdate(event) {
-                // console.log(event)
                 let timeupdate = this.timeView === true ? ('' + event.timeStamp).split('.')[0] :
                     event.path[0].currentTime
                 this.$.audio.controls = false
@@ -170,15 +169,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         }, 1000)
                     }
                     if (err === false) {
-                        this.elemTitle = this.$.titleInput.value// this.elemTitle.split(' ').join('')
+                        this.elemTitle = this.$.titleInput.value
                         var that = this
                         window.dispatchEvent(new CustomEvent('connect', { detail: { element: that } }))
-                        window.dispatchEvent(new CustomEvent('elemem-title', {
-                            detail:
-                                { title: this.elemTitle }
-                        }))
-                        //   window.dispatchEvent(new CustomEvent('source', { detail: { name: this.elemTitle, type: this.type } }))
-                        window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
+                        window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
+                        window.dispatchEvent(new CustomEvent('source', { detail: { name: this.elemTitle, type: this.type } }))
                         this.open = false
                     }
                 }, this.$.titleInput.value, src)
@@ -196,7 +191,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
                             window.dispatchEvent(new CustomEvent('remove-elem', { detail: { title: this.elemTitle } }))
                             this.$.player.stopSong()
-                            //   delete this.agentClass.sourceNode[this.elemTitle]
                             this.parentElement.removeChild(this)
                         }, this.elemTitle)
                     }, 'sourceNode', this.elemTitle)

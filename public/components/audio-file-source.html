@@ -140,7 +140,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             timeupdate(event) {
-                // console.log(event)
                 let timeupdate = this.timeView === true ? ('' + event.timeStamp).split('.')[0] :
                     event.path[0].currentTime
                 this.$.audio.controls = false
@@ -156,7 +155,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 let input = event.target;
                 let reader = new FileReader();
                 reader.onprogress = evt => {
-                    //console.log('onprogress', evt)
                     this.loading = 'loading...'
                 }
                 reader.onload = () => {
@@ -176,8 +174,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             setSource(src) {
                 setTimeout(() => {
                     this.agentClass.setElementSource((err) => {
-
-                        console.log('got here..!!', err)
                         if (typeof err === 'object') {
                             throw this.error('input ', err);
                         } else if (typeof err === 'string') {
@@ -189,12 +185,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         if (err === false) {
                             var that = this
                             window.dispatchEvent(new CustomEvent('connect', { detail: { element: that } }))
-                            window.dispatchEvent(new CustomEvent('elemem-title', {
-                                detail:
-                                    { title: this.elemTitle }
-                            }))
+                            window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
                             window.dispatchEvent(new CustomEvent('source', { detail: { name: this.elemTitle, type: this.type } }))
-                            // window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
                             this.boxShow = true
                         }
                     }, this.elemTitle, src)

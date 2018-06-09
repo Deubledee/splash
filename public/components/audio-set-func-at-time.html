@@ -158,7 +158,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
                 if (this.titleFuncion.indexOf('ancel') > 0) {
                     this.notHere = true
-                }                
+                }
             }
 
             escape(value) {
@@ -211,6 +211,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 for (let i = 0; i < that.appliesWith[name].length; i++) {
                                     that.appliesWith[name][i].elem.click()
                                 }
+                            }
+
+                            if (this.type === 'threshold' || this.type === 'knee' || this.type === 'ratio' ||
+                                this.type === 'attack' || this.type === 'release') {
+                                window.dispatchEvent(new CustomEvent('compressor-changed', {}))
+                                console.log(this.type)
                             }
                             setTimeout(() => {
                                 this.waiting = !this.waiting

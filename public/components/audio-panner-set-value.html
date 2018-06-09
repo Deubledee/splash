@@ -12,84 +12,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="audio-panner-set-value">
     <template>
         <style include="shared-styles-typeF">
-            :host {
-                width: 100%;
-                margin-right: 0px;
-            }
-
-            section {
-                display: none
-            }
-
-            section[show] {
-                display: flex;
-                flex-flow: row
-            }
-
-            paper-item[sellected] {
-                background-color: chartreuse
-            }
-
-            paper-icon-button.diferent {
-                color: var(--app-color)
-            }
-
-            div[close-button] {
-                right: 1%;
-                top: -12px;
-            }
-
-            .showValueswraper {
-                right: 38%
-            }
-
-            .labelforvol {
-                color: var(--app-progress-color)
-            }
-
-            div[buttons][show] {
-                left: 92%;
-            }
-
-            div[buttons] {
-                position: relative;
-                left: 138px;
-                padding: 7px;
-                display: flex;
-                flex-flow: row;
-                width: 63px;
-            }
-
-            div[block] {
-                width: 177px;
-                padding: 2px;
-                box-shadow: 0px 1px 0px #939292;
-            }
-
-            div[block2] {
-                box-sizing: border-box;
-                margin-right: 1px;
-                width: 175px;
-                box-shadow: 1px 1px 1px #939292;
-                border-radius: var(--app-standart-border-radius);
-                padding: 7px;
-            }
-
-            div[outer] {
-                font-size: 9px
-            }
-
-            .shutiit {
-                display: none;
-            }
-
-            .shutiit[nothere] {
-                display: block;
-            }
-
-            paper-dropdown-menu.custom {
-                background-color: initial;
-            }
+            :host { width: 100%; margin-right: 0px; } section { display: none } section[show] { display: flex; flex-flow: row } paper-item[sellected]
+            { background-color: chartreuse } paper-icon-button.diferent { color: var(--app-color) } div[close-button] { right:
+            1%; top: -12px; } .showValueswraper { right: 38% } .labelforvol { color: var(--app-progress-color) } div[buttons][show]
+            { left: 92%; } div[buttons] { position: relative; left: 138px; padding: 7px; display: flex; flex-flow: row; width:
+            63px; } div[block] { width: 177px; padding: 2px; box-shadow: 0px 1px 0px #939292; } div[block2] { box-sizing:
+            border-box; margin-right: 1px; width: 175px; box-shadow: 1px 1px 1px #939292; border-radius: var(--app-standart-border-radius);
+            padding: 7px; } div[outer] { font-size: 9px } .shutiit { display: none; } .shutiit[nothere] { display: block;
+            } paper-dropdown-menu.custom { background-color: initial; }
         </style>
         <article>
             <nav class="independent">
@@ -140,13 +70,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <aside id="vol">
                         <paper-input class="diferent" title="" label="[[typeY]]" size="3" min="-3.4" max="3.4" step="0.05" value="{{valY}}">
                         </paper-input>
-                        <div outer>
-                            <template is="dom-if" if="{{titleSet}}">
-                                <audio-aplly-with id="aplyWith" agent-class="[[agentClass]]" title-funcion="[[joinTitle(titleFuncion, typeY)]]" elem-title="[[elemTitle]]">
-                                    <paper-button slot="applyButton" id="apllyNow" on-click="bindY">aplly now</paper-button>
-                                </audio-aplly-with>
-                            </template>
-                        </div>
+                    </aside>
+                    <div outer>
+                        <template is="dom-if" if="{{titleSet}}">
+                            <audio-aplly-with id="aplyWith" agent-class="[[agentClass]]" title-funcion="[[joinTitle(titleFuncion, typeY)]]" elem-title="[[elemTitle]]">
+                                <paper-button slot="applyButton" id="apllyNow" on-click="bindY">aplly now</paper-button>
+                            </audio-aplly-with>
+                        </template>
+                    </div>
+
                 </div>
 
                 <div block2>

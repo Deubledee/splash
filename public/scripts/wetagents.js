@@ -166,6 +166,24 @@ class WetAgents {
 
     }
 
+    compressor(done, compressor) {
+        try {
+            if (this.sourceNode[compressor] === undefined &&
+                this.contextNode[compressor] === undefined && compressor) {
+                this.contextNode[compressor] = this.context.createDynamicsCompressor();
+                setTimeout(() => {
+                    this.contextNode[compressor].onRemove = () => { }
+                    done(null, this.contextNode[compressor])
+                }, 100)
+            } else {
+                done('already exists', undefined)
+            }
+        } catch (err) {
+            done('compressor error', undefined)
+            throw new Error(err);
+        }
+    }
+
     listner(listen, forwardX, forwardY, forwardZ, upX, upY, upZ) {
         this.contextNode[listen].forwardX.value = forwardX || 0;
         this.contextNode[listen] = this.context.listener;
@@ -219,7 +237,6 @@ class WetAgents {
     }
 
     removeAgents(done, context, agent) {
-        console.log(context, agent)
         this[context][agent].onRemove()
         delete this[context][agent]
         done()

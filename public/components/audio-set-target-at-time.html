@@ -20,7 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <nav class="independent">
                 <div>
                     <label id="frovol" class="labelforvol" for="vol" waiting$="[[waiting]]" rEady$="[[rEady]]">
-                        Target AtTime
+                        [[titleFuncion]]
                     </label>
                 </div>
                 <div class="showValueswraper" on-click="showValues" show$="[[show]]">
@@ -170,6 +170,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 that.appliesWith[name][i].elem.click()
                             }
                         }
+                        if (this.type === 'threshold' || this.type === 'knee' || this.type === 'ratio' ||
+                                this.type === 'attack' || this.type === 'release') {
+                                window.dispatchEvent(new CustomEvent('compressor-changed', {}))
+                                console.log(this.type)
+                            }
                         setTimeout(() => {
                             this.waiting = !this.waiting
                             this.$.frovol.innerHTML = 'ready...'
