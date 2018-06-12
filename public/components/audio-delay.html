@@ -10,25 +10,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="./audio-functions.html">
 
-<dom-module id="audio-gain">
+<dom-module id="audio-delay">
     <template>
         <style include="shared-styles-typeG">
             :host { width: 179px; margin-right: 4px; }
         </style>
         <article>
             <label for="range">[[elemTitle]]
-                <span>Gain</span>
+                <span>[[type]]</span>
                 <button on-click="removeCall"> x </button>
             </label>
             <div class="open divtitle-area" open$="[[open]]">
                 <section id="title" class="open" open$="[[open]]">
-                    <paper-input id="titleInput" class="diferent" min="0" max="5" step="0.5" label="new title" title="new title" value="{{elemTitle}}">
+                    <paper-input id="titleInput" class="diferent" label="new title" title="new title" value="{{elemTitle}}">
                     </paper-input>
                     <paper-button on-click="submit" raised>aplly title </paper-button>
                 </section>
             </div>
             <section class="show" show$="[[show]]">
-                <audio-functions id="functions">
+                <audio-functions id="functions" context-node="[[contextNode]]" agent-class="[[agentClass]]" type="[[delayTime]]">
                     <div slot="functionArea">
 
                     </div>
@@ -38,9 +38,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </template>
     <script>
-        class audioGain extends Polymer.Element {
+        class audioDelay extends Polymer.Element {
             static get is() {
-                return 'audio-gain';
+                return 'audio-delay';
             }
             constructor() {
                 super();
@@ -57,7 +57,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     },
                     type: {
                         type: String,
-                        value: 'gain'
+                        value: 'delay'
+                    },
+                    delayTime: {
+                        type: String,
+                        value: 'delayTime'
                     },
                     agentClass: {
                         type: Object,
@@ -79,18 +83,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            submit() {
+            submit(event) {
                 if (this.$.titleInput.value.length > 0) {
                     this.elemTitle = this.elemTitle.split(' ').join('');
-                    this.agentClass.gain((error) => {
-                        if (!error) {
+                    this.agentClass.delay((error) => {                        
+                        if (error === null) {
                             var that1 = this
                             window.dispatchEvent(new CustomEvent('connect', { detail: { element: that1 } }))
                             let that = this.agentClass
                             this.open = false
                             this.show = true
-                            this.$.functions.agentClass = this.agentClass
-                            this.$.functions.type = this.type
                             this.$.functions.elemTitle = this.elemTitle
                             window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: this.elemTitle } }))
                         } else {
@@ -99,7 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 this.$.titleInput.value = ''
                             }, 1000)
                         }
-                    }, this.elemTitle, 0, 0)
+                    }, this.elemTitle)
                 }
             }
 
@@ -122,7 +124,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
         }
-        window.customElements.define(audioGain.is, audioGain);
+        window.customElements.define(audioDelay.is, audioDelay);
 
     </script>
 </dom-module>

@@ -12,7 +12,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template>
         <style include="shared-styles-typeF">
             :host { width: 100%; margin-right: 0px; } aside[id=start][notHere]{ display: none } section[list-box-hiden]{ display: none
-            } section[list-box-hiden][boxShow]{ display: block } paper-item[sellected] { background-color: chartreuse }
+            } section[list-box-hiden][boxShow]{ display: block } paper-item[sellected] { background-color: chartreuse } span{color:
+            var(--app-color) }
         </style>
         <article>
             <nav class="independent">
@@ -30,6 +31,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <paper-icon-button noink icon="close" title="remove"></paper-icon-button>
                 </div>
             </nav>
+            <div>                
+                <span>  [[min]]  </span>
+                <span> [[max]] </span>
+            </div>
             <section class="show" show$="[[show]]">
                 <template is="dom-repeat" items="{{titles}}" as="title" mutable-data="true">
                     <aside id="vol">
@@ -114,6 +119,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Array,
                         value: []
                     },
+                    max: {
+                        type: String,
+                    },
+                    min: {
+                        type: String,
+                    },
                     titleObj: {
                         type: Object,
                         value: function () {
@@ -159,6 +170,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if (this.titleFuncion.indexOf('ancel') > 0) {
                     this.notHere = true
                 }
+                this.max = '' + this.contextNode[this.type].maxValue
+                this.min = '' + this.contextNode[this.type].minValue
+                this.max = this.max.slice(0, 4) 
+                this.min = this.min.slice(0, 4) + ' >='
             }
 
             escape(value) {
@@ -205,8 +220,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.waiting = true
                 let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
                 if (this.escape(parseFloat(this.bindVol)) === true) {
-                    that.setAgentParamTo((err) => {
-                        if (!err) {
+                    that.setAgentParamTo((err, context) => {
+                        if (err === null) {
                             if (that.appliesWith[name]) {
                                 for (let i = 0; i < that.appliesWith[name].length; i++) {
                                     that.appliesWith[name][i].elem.click()

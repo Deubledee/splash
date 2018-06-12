@@ -22,6 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             nav {
                 display: flex;
                 flex-flow: column;
+                box-sizing: border-box;
                 padding: 8px
             }
 
@@ -194,11 +195,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     if (this.audio.loop === true) {
                         this.loop = false
                         this.looping = true
-                        this.$.progress.progressToX(figure)
+                        this.$.progress.progressToX(figure, this.duration)
                         let degs = figure1 / 100 * 360
                         this.$.loop.style.transform = `rotate(-${degs}deg)`
                     } else {
-                        this.$.progress.progressToX(figure1)
+                        this.$.progress.progressToX(figure1, this.duration)
                     }
                 }
                 this.audio.onended = event => {

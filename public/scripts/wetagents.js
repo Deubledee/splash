@@ -166,6 +166,26 @@ class WetAgents {
 
     }
 
+    delay(done, delay) {
+        console.log(delay)
+        try {
+            if (this.sourceNode[delay] === undefined &&
+                this.contextNode[delay] === undefined && delay) {
+                this.contextNode[delay] = this.context.createDelay(179);
+                setTimeout(() => {
+                    this.contextNode[delay].onRemove = () => { }
+                    done(null)
+                }, 100)
+            } else {
+                done('already exists')
+            }
+        } catch (err) {
+            done('panner error')
+            throw new Error(err);
+        }
+
+    }
+
     compressor(done, compressor) {
         try {
             if (this.sourceNode[compressor] === undefined &&
@@ -214,7 +234,7 @@ class WetAgents {
             if (func === true) {
                 agent[param1][param2](to, this.context.currentTime + to1, to2)
                 console.log(param1, param2, to, to1, to2, func)
-                done()
+                done(null)
             } else {
                 console.log(param1, param2, to, to1, to2, func)
                 if (typeof agent[param1] !== 'function') {
@@ -226,7 +246,7 @@ class WetAgents {
                 } else {
                     agent[param1](to, to1, to2)
                 }
-                done()
+                done(null)
             }
 
             //  agent.changed = true
@@ -493,48 +513,6 @@ class WetAgents {
     }
 
     //methods not applyed yet\\
-    constantSource(stream) {
-        this.source = this.context.createConstantSource(stream);
-        try {
-            if (!this.sourceNode[sourceName]) {
-                this.sourceNode[sourceName] = this.context.createMediaStreamSource(stream);
-                done()
-
-            } else {
-                done(sourceName + ' already exists or no argumet value!!')
-            }
-        } catch (err) {
-            done(err)
-        }
-    }
-
-    delay(delayNode, value, startVal) {
-        this.contextNode[delayNode] = this.context.createDelay(startVal)
-    }
-
-    biquadFilter(biquadFilter, type, gain, freq) {
-        this.contextNode[biquadFilter] = this.context.createBiquadFilter();
-    }
-
-    convolver(reverb, stream) {
-        this[reverb] = this.context.createConvolver();
-    }
-
-    oscillator(oscillator, stream) {
-        this[oscillator] = sourceBuffer.createOscillator();
-    }
-
-    newBuffer(sourceName, channels) {
-        this[sourceName] = this.context.createBuffer(channels, this.context.sampleRate * 3, this.context.sampleRate);
-        this.buffering = this[sourceName].getChannelData(this[sourceName])
-    }
-
-
-
-    bufferSource() {
-        this.source = this.context.createBufferSource();
-    }
-    //https://developer.mozilla.org/en-US/docs/Web/API/PannerNode
 
 
     whiteNoise() {

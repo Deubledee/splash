@@ -27,7 +27,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             } .input { height: 15px; visibility: visible; font-size: 9px; } .input[show] { visibility: collapse; } .input[input]
             { visibility: collapse; } .showValueswraper { color: #a9a1a1; top: -14px; } .wavesNavDisplay { display: flex;
             flex-flow: column; margin-bottom: 2px; font-size: 11px; } .wavesNavDisplay span { margin-left: 3px; font-size:
-            10px; } .top { position: relative; top: 38px; }
+            10px; } .top { position: relative; top: 38px; }span{color:
+            var(--app-color) }
 
         </style>
         <app-location route="{{route}}"></app-location>
@@ -48,6 +49,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <paper-icon-button noink icon="close" title="remove"></paper-icon-button>
                 </div>
             </nav>
+            <div>                
+                <span>  [[min]]  </span>
+                <span> [[max]] </span>
+            </div>
             <section class="show" show$="[[show]]">
                 <aside id="vol">
                     <nav class="wavesNavDisplay">
@@ -94,6 +99,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             ready() {
                 super.ready()
+                this.max = '' + this.contextNode[this.type].maxValue
+                this.min = '' + this.contextNode[this.type].minValue
+                this.max = this.max.slice(0, 4) 
+                this.min = this.min.slice(0, 4) + ' >='
             }
             static get properties() {
                 return {
@@ -122,6 +131,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: function () {
                             return titleObj
                         }
+                    },
+                    max: {
+                        type: String,
+                    },
+                    min: {
+                        type: String,
                     },
                     rEady: {
                         type: Boolean,
@@ -255,8 +270,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.$.frovol.innerHTML = 'Waitng...'
                 this.waiting = true
                 let name = this.elemTitle + this.titleFuncion.split(' ').join('').toLocaleUpperCase()
-                that.setAgentParamTo((err) => {
-                    if (!err) {
+                that.setAgentParamTo((err, context) => {
+                    if (err === null) {
                         if (that.appliesWith[name]) {
                             for (let i = 0; i < that.appliesWith[name].length; i++) {
                                 that.appliesWith[name][i].elem.click()
@@ -276,6 +291,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         setTimeout(() => {
                             this.$.frovol.innerHTML = this.titleFuncion
                             this.rEady = false
+                            console.log(this.contextNode[this.type].maxValue, this.contextNode[this.type].minValue)
                         }, 1500)
                     } else {
                         console.error(err)

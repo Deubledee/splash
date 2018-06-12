@@ -154,10 +154,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            progressToX(percentage) {
+            progressToX(percentage, duration) {
                 if (this.moving === false) {
-                    let x = percentage / 100 * 189
-                    let rectx = percentage / 100 * 189
+                    let x = duration >= 100 ? percentage / 100 * 189 : percentage / 100 * 130
+                    let rectx = duration >= 100 ? percentage / 100 * 189 : percentage / 100 * 125
                     let radius = parseInt(getComputedStyle(this.$.circle, null).r.split('px')[0])
                     this.$.circle.style.cx = parseInt(x) + radius
                     this.$.rect2.style.width = parseInt(rectx) + 'px'                    
