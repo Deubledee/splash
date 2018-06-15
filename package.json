@@ -1,9 +1,9 @@
 {
-  "name": "tueeber",
+  "name": "splash",
   "license": "MIT",
   "vesion": "0.0.1",
   "author": "deubledee",
-  "repository": "https://github.com/Deubledee/tueeber.git",
+  "repository": "https://github.com/Deubledee/splash.git",
   "devDependencies": {
     "eslint": "^3.19.0",
     "eslint-config-google": "^0.7.0",
