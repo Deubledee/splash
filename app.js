@@ -17,13 +17,7 @@ app.use(expressSession({
 app.use(responseTime());
 app.use('/publicbower', express.static(path.join(__dirname, 'public/bower_components/webcomponentsjs')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use('/socket', express.static(path.join(__dirname, 'node_modules/socket.io-client/dist')));
 app.use('/src', express.static(path.join(__dirname, 'src')));
 
 app.use('/', index);
-app.use('/mixtable/*', index);
-app.use('/elemTitle/*', index);
-app.use('/removeelem/*', index);
-app.use('/profile/*', index);
-app.post('/audio/', resend);
 module.exports = app;
