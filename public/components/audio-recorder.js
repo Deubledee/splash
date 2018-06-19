@@ -409,7 +409,7 @@ class audioRecorder extends PolymerElement {
                  // window.dispatchEvent(new CustomEvent('apllywith', { detail: { title: this.elemTitle } }))
                   this.open = false
                   this.recorder = new WebAudioRecorder(mixer, {
-                      workerDir: '/public/scripts/'
+                      workerDir: ('public/scripts/' || '/public/scripts/' || '../public/scripts/')
                   })
                   this.recorder.setEncoding('mp3')
               }

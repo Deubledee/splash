@@ -137,7 +137,19 @@ class AudioApp extends PolymerElement {
   _ensureLazyLoaded() {
     // load lazy resources after render and set `loadComplete` when done.
     if (!this.loadComplete) {
-     console.log('load complete')
+      afterNextRender(this, () => {
+        importHref(this.resolveUrl('lazy-resources.html'), () => {
+          this._notifyNetworkStatus();
+          this.loadComplete = true;
+
+          // Load pre-caching Service Worker
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js', {
+              scope: '/'
+            });
+          }
+        });
+      });
     }
   }
 

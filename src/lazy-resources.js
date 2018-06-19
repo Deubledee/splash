@@ -1,7 +1,7 @@
 import '@polymer/polymer/polymer-element.js';
-import '@polymer/polymer/lib/mixins/gesture-event-listeners.js';;
+import '@polymer/polymer/lib/mixins/gesture-event-listeners.js';
+import '@polymer/app-layout/app-scroll-effects/app-scroll-effects.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-pages/iron-pages.js';
 import '@polymer/iron-input/iron-input.js';
 import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/iron-icons/av-icons.js';
