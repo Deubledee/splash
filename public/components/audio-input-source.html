@@ -82,7 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     hasMic: Boolean,
                     gUM: {
                         type: Object,
-                        computed: 'gUMStart(agentClass)'
+                        computed: 'gUMStart(hasMic)'
                     },
                     constraints: {
                         type: Object,
@@ -125,10 +125,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     for (var i = 0, item; item = detail[i]; i++) {
                         if (item.kind === "audioinput") {
                             this.hasMic = true
-                            return
-                        } else {
-                            this.hasMic = false
-                        }
+                            return                            
+                        } 
                     }
                 })
             }
