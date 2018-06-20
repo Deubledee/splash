@@ -119,33 +119,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             gUMStart(agentClass) {
-                navigator.mediaDevices.enumerateDevices().then(function(detail){
-                    detail.map(item=>{
-                        if(item.kind === "audioinput"){
-                            try {
-                                if (navigator.mediaDevices.getUserMedia) {
-                                    this.promisse = true
-                                    return navigator.mediaDevices
-                                }
-                                else
-                                    if (navigator.getUserMedia) {
-                                        this.promisse = false
-                                        return navigator
-                                }
-                                else {
-                                    this.noGUmWarn()
-                                    return {}
-                                }
-                            }
-                            catch (err) {
-                                throw 'an error acoured' + err
-                            }
-                        } else {
-                            alert('no mic')
-                            console.log('no mic')
+                navigator.mediaDevices.enumerateDevices().then(function (detail) {
+                    detail.map(item => {
+                        console.log(item.kind)
+                        if (item.kind === "audioinput") {
+                            //alert('no mic')
+                            console.log('mic', item.kind)
                         }
-                    })	
-                })                 
+                    })
+                })
+                try {
+                    if (navigator.mediaDevices.getUserMedia) {
+                        this.promisse = true
+                        return navigator.mediaDevices
+                    }
+                    else
+                        if (navigator.getUserMedia) {
+                            this.promisse = false
+                            return navigator
+                        }
+                        else {
+                            this.noGUmWarn()
+                            return {}
+                        }
+                }
+                catch (err) {
+                    throw 'an error acoured' + err
+                }
+
+
+
             }
 
             noGUmWarn() {
