@@ -51,6 +51,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             ready() {
                 super.ready()
+                this.checkInputDevice()
             }
             static get properties() {
                 return {
@@ -78,6 +79,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     agentClass: {
                         type: Object
                     },
+                    hasMic: Boolean,
                     gUM: {
                         type: Object,
                         computed: 'gUMStart(agentClass)'
@@ -118,30 +120,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.timeView = !this.timeView
             }
 
-            gUMStart(agentClass) {
-                navigator.mediaDevices.enumerateDevices().then(function (detail) {
-                    let hasMic
+            checkInputDevice() {
+                navigator.mediaDevices.enumerateDevices().then((detail) => {
                     for (var i = 0, item; item = detail[i]; i++) {
                         if (item.kind === "audioinput") {
-                            hasMic = true
+                            this.hasMic = true
                             return
                         } else {
-                            hasMic = false
+                            this.hasMic = false
                         }
-
                     }
-                    setTimeout(() => {
-                        if (hasMic === true) {
-                            console.log('item.kind')
-                            doGum()
-                        }
-                        if (hasMic === false) {
-                            console.log('item.kind')
-                            this.noGUmWarn()
-                        }
-                    }, 100)
                 })
-                function doGum() {
+            }
+
+            gUMStart() {
+                if (this.hasMic === true) {
                     try {
                         if (navigator.mediaDevices.getUserMedia) {
                             this.promisse = true
@@ -153,19 +146,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 return navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
                             }
                             else {
-                                this.noGUmWarn()
+                                this.noGUmWarn('Browser not compatible!!! :(')
                                 return {}
                             }
                     }
                     catch (err) {
                         throw 'an error acoured' + err
                     }
+                } else {
+                    this.noGUmWarn('No input device found!!! :(')
                 }
+
             }
 
-            noGUmWarn() {
+            noGUmWarn(alert) {
                 this.promisse = undefined
-                alert('Browser not compatible or no device found!!! :(')
+                alert(alert)
             }
 
             gumMe() {
