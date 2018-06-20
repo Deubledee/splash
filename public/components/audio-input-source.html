@@ -136,7 +136,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     try {
                         if (navigator.mediaDevices.getUserMedia) {
                             this.promisse = true
-                            return navigator.mediaDevices.getUserMedia
+                            return navigator.mediaDevices
                         }
                         else
                             if (navigator.getUserMedia) {
@@ -164,7 +164,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             gumMe() {
                 if (this.promisse === true) {
-                    this.gUM(this.constraints)
+                    this.gUM.getUserMedia(this.constraints)
                         .then((this.success).bind(this))
                         .catch((error) => {
                             throw this.error('The following gUM error occured: ', error)
