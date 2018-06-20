@@ -119,14 +119,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             gUMStart(agentClass) {
+                
                 navigator.mediaDevices.enumerateDevices().then(function (detail) {
-                    detail.map(item => {
-                        console.log(item.kind)
+                  let hasMic = detail.map(item => {
                         if (item.kind === "audioinput") {
-                            //alert('no mic')
-                            console.log('mic', item.kind)
+                            return true                   
                         }
                     })
+                    if(hasMic === true){
+                        console.log('item.kind')
+                    }
                 })
                 try {
                     if (navigator.mediaDevices.getUserMedia) {
