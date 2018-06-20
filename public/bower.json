@@ -1,0 +1,15 @@
+{
+    "name": "audioApp",
+    "version": "2.0.0",
+    "authors": [
+      "Deubledee"
+    ],
+    "private": true,
+    "dependencies": {     
+      "polymer": "Polymer/polymer"
+    },
+    "devDependencies": {
+      "web-component-tester": "^6.0.0"
+    }
+  }
+  
