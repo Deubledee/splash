@@ -33,6 +33,7 @@ coverage
 build/Release
 
 # Dependency directories
+bin/www2
 node_modules/
 jspm_packages/
 

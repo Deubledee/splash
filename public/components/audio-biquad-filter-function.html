@@ -9,7 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 
-<dom-module id="audio-panner-function">
+<dom-module id="audio-biquad-filter-function">
     <template>
         <style include="shared-styles-dropdown">
             :host {
@@ -38,9 +38,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
     </template>
     <script>
-        class audioPannerFunction extends Polymer.Element {
+        class audioBiquadFilterFunction extends Polymer.Element {
             static get is() {
-                return 'audio-panner-function';
+                return 'audio-biquad-filter-function';
             }
             constructor() {
                 super();
@@ -63,21 +63,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     },
                     value: {
                         type: String,
-                        value: 'add pann',
+                        value: 'add filter',
                         notify: true,
                         // observer: 'pann'
                     },
                     options: {
                         value: [
-                            { id: 'Start', name: 'Panns' },
-                            { id: 'panner-set-roll-model', name: 'Panning Model', count: 0 },
-                            { id: 'panner-set-function', name: 'Position Adv', count: 0 },
-                            { id: 'panner-set-function', name: 'Orientation Adv', count: 0 },
-                            { id: 'panner-set', name: 'Position Spl', count: 0 },
-                            { id: 'panner-set', name: 'Orientation Spl', count: 0 },
-                            { id: 'panner-set-value', name: 'Cone', count: 0 },
-                            { id: 'panner-set-value', name: 'Distance', count: 0 },
-                            { id: 'panner-set-roll-model', name: 'Roll off', count: 0 },
+                            { id: 'Start', name: 'Filters' },
+                            { id: 'biquad-filter-set-value', name: 'detune', count: 0 },
+                            { id: 'biquad-filter-set-value', name: 'frequency', count: 0 },
+                            { id: 'biquad-filter-set-value', name: 'Q', count: 0 },
+                            { id: 'biquad-filter-set-value', name: 'gain', count: 0 },
+                            { id: 'biquad-filter-set-value', name: 'type', count: 0 },
                         ]
                     },
                 }
@@ -89,20 +86,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             addFunction(data) {
                 if (data.model && data.model.__data.option.id !== 'Start') {
-                    if (data.model.__data.option.id === 'panner-set-function' || data.model.__data.option.id === 'panner-set') {
-                        var element = document.createElement('audio-' + data.model.__data.option.id)
-                        element.typeFuncion = data.model.__data.option.name.slice(0, data.model.__data.option.name.length - 4)
-                    }
-                    if (data.model.__data.option.id === 'panner-set-value' || data.model.__data.option.id === 'panner-set-roll-model') {
-                        var element = document.createElement('audio-' + data.model.__data.option.id)
-                        element.typeFuncion = data.model.__data.option.name.split(' ').join('')
-                        element.distModels = ['Models', 'linear', 'inverse', 'exponential']
-                    }
-                   
+                    var element = document.createElement('audio-' + data.model.__data.option.id)
                     var arr = this.options
-                    arr[data.model.index].count += 1
                     this.options = arr
+                    element.typeFuncion = data.model.__data.option.name
+                    arr[data.model.index].count += 1
                     element.elemTitle = this.elemTitle
+                    element.models = ['Models', 'lowpass', 'highpass', 'bandpass','lowshelf', 'highshelf', 'peaking', 'notch', 'allpass']
                     element.agentClass = this.agentClass
                     element.contextNode = this.agentClass.contextNode[this.elemTitle]
                     element.titleFuncion = data.model.__data.option.name + ' ' + (data.model.__data.option.count)
@@ -114,7 +104,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
         }
-        window.customElements.define(audioPannerFunction.is, audioPannerFunction);
+        window.customElements.define(audioBiquadFilterFunction.is, audioBiquadFilterFunction);
 
     </script>
 </dom-module>

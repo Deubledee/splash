@@ -9,21 +9,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="./audio-functions.html">
-<dom-module id="audio-panner-set-value">
+<dom-module id="audio-biquad-filter-set-value">
     <template>
-        <style include="shared-styles-typeF">
+            <style  include="shared-styles-typeF">
             :host {
                 width: 100%;
                 margin-right: 0px;
             }
-
+            article{
+                width: 184px;  
+            }
             section {
-                display: none
+                display: none;  
+                min-height: 92px;   
+                height: auto;              
+                box-shadow: 1px 1px 1px #939292; 
+                border-radius: var(--app-standart-border-radius);
             }
 
             section[show] {
                 display: flex;
-                flex-flow: row
+                flex-flow: row;
             }
 
             paper-item[sellected] {
@@ -47,13 +53,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 color: var(--app-progress-color)
             }
 
-            div[buttons][show] {
+          /*  div[buttons][show] {
                 left: 92%;
-            }
+            }*/
 
             div[buttons] {
                 position: relative;
-                left: 138px;
+                left: 137px;
                 padding: 7px;
                 display: flex;
                 flex-flow: row;
@@ -61,22 +67,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             div[block] {
-                width: 177px;
-                padding: 2px;
-                box-shadow: 0px 1px 0px #939292;
-            }
-
-            div[block2] {
                 box-sizing: border-box;
-                margin-right: 1px;
+                margin-left: 1px;
+                margin-right: 2px;
                 width: 175px;
-                box-shadow: 1px 1px 1px #939292;
-                border-radius: var(--app-standart-border-radius);
-                padding: 7px;
-            }
-
-            div[outer] {
-                font-size: 9px
+                padding: 7px;            
             }
 
             .shutiit {
@@ -90,6 +85,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             paper-dropdown-menu.custom {
                 background-color: initial;
             }
+
+           /* article{
+                box-shadow: 1px 1px 1px #939292;
+                border-radius: var(--app-standart-border-radius);
+            }*/
         </style>
         <article>
             <nav class="independent">
@@ -109,66 +109,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </div>
             </nav>
             <section show$="[[show]]">
-                <div block2 class="shutiit" nothere$="[[!nothere]]">
-                    <aside id="vol">
-                        <paper-input class="diferent" title="" label="[[typeX]]" size="3" min="-3.4" max="3.4" step="0.05" value="{{valX}}">
-                        </paper-input>
-                    </aside>
-                    <div outer>
-                        <template is="dom-if" if="{{titleSet}}">
-                            <audio-aplly-with id="aplyWith" agent-class="[[agentClass]]" title-funcion="[[joinTitle(titleFuncion, typeX)]]" elem-title="[[elemTitle]]">
-                                <paper-button slot="applyButton" id="apllyNow" on-click="bindX">aplly now</paper-button>
-                            </audio-aplly-with>
-                        </template>
-                    </div>
+                <div block class="shutiit" nothere$="[[nothere]]">
+                    <paper-dropdown-menu class="custom custom2" label="[[typeX]]">
+                        <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
+                            <template is="dom-repeat" items="{{models}}" as="model" mutable-data="true">
+                                <paper-item on-click="bindXOptionh" id="[[model]]" value=[[model]]>
+                                    [[model]]
+                                </paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
                 </div>
-                <div block2 class="shutiit" nothere$="[[nothere]]">
-                    <aside outer>
-                        <paper-dropdown-menu class="custom custom2" label="[[typeX]]">
-                            <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
-                                <template is="dom-repeat" items="{{distModels}}" as="option" mutable-data="true">
-                                    <paper-item on-click="bindXOptionh" id="[[option]]" value=[[option]]>
-                                        [[option]]
-                                    </paper-item>
-                                </template>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
-                    </aside>
-                </div>
-                <div block2>
-                    <aside id="vol">
-                        <paper-input class="diferent" title="" label="[[typeY]]" size="3" min="-3.4" max="3.4" step="0.05" value="{{valY}}">
-                        </paper-input>
-                    </aside>
-                    <div outer>
-                        <template is="dom-if" if="{{titleSet}}">
-                            <audio-aplly-with id="aplyWith" agent-class="[[agentClass]]" title-funcion="[[joinTitle(titleFuncion, typeY)]]" elem-title="[[elemTitle]]">
-                                <paper-button slot="applyButton" id="apllyNow" on-click="bindY">aplly now</paper-button>
-                            </audio-aplly-with>
-                        </template>
-                    </div>
-                </div>
-                <div block2>
-                    <aside id="vol">
-                        <paper-input class="diferent" title="" label="[[typeZ]]" size="3" min="-3.4" max="3.4" step="0.05" value="{{valZ}}">
-                        </paper-input>
-                    </aside>
-                    <div outer>
-                        <template is="dom-if" if="{{titleSet}}">
-                            <audio-aplly-with id="aplyWith3" agent-class="[[agentClass]]" title-funcion="[[joinTitle(titleFuncion, typeZ)]]" elem-title="[[elemTitle]]">
-                                <paper-button slot="applyButton" id="apllyNow" on-click="bindZ">aplly now</paper-button>
-                            </audio-aplly-with>
-                        </template>
-                    </div>
+                <div block class="shutiit" nothere$="[[!nothere]]">
+                    <audio-functions id="functions" context-node="[[contextNode]]" agent-class="[[agentClass]]" elem-title="[[elemTitle]]" type="[[typeX]]">
+                        <div slot="functionArea">
+
+                        </div>
+                    </audio-functions>
                 </div>
             </section>
         </article>
     </template>
     <script>        
-        class audioPannerSetValue extends Polymer.Element {
+        class audioBiquadFilterSetValue extends Polymer.Element {
 
             static get is() {
-                return 'audio-panner-set-value';
+                return 'audio-biquad-filter-set-value';
             }
 
             constructor() {
@@ -193,21 +159,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     typeX: {
                         type: String,
                     },
-                    typeY: {
-                        type: String,
-                    },
-                    typeZ: {
-                        type: String,
-                    },
                     valX: {
-                        type: Number,
-                        value: 0
-                    },
-                    valY: {
-                        type: Number,
-                        value: 0
-                    },
-                    valZ: {
                         type: Number,
                         value: 0
                     },
@@ -270,7 +222,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Boolean,
                         value: false
                     },
-                    distModels: {
+                    models: {
                         type: Array,
                         notify: true
                     },
@@ -300,17 +252,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             calcTitles(functionType) {
                 let strMap = functionType.toLocaleLowerCase()
-                if (strMap === 'cone') {
-                    this.typeX = strMap + 'InnerAngle'
-                    this.typeY = strMap + 'OuterAngle'
-                    this.typeZ = strMap + 'OuterGain'
-                }
-                if (strMap === 'distance') {
-                    this.typeX = strMap + 'Model'
-                    this.typeY = 'max' + functionType
-                    this.typeZ = 'ref' + functionType
+                console.log('functionType', functionType)
+                if (functionType === 'type') {
                     this.nothere = true
                 }
+                this.typeX = functionType
                 this.titleSet = true
             }
 
@@ -321,7 +267,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             bindXOptionh(item) {
-                this.bindVal = item.model.__data.option
+                this.bindVal = item.model.__data.model
                 this.type = this.typeX
                 this.apllyNow()
             }
@@ -329,18 +275,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             bindX() {
                 this.bindVal = this.valX
                 this.type = this.typeX
-                this.apllyNow()
-            }
-
-            bindY() {
-                this.bindVal = this.valY
-                this.type = this.typeY
-                this.apllyNow()
-            }
-
-            bindZ() {
-                this.bindVal = this.valZ
-                this.type = this.typeZ
                 this.apllyNow()
             }
 
@@ -379,7 +313,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
         }
 
-        window.customElements.define(audioPannerSetValue.is, audioPannerSetValue);
+        window.customElements.define(audioBiquadFilterSetValue.is, audioBiquadFilterSetValue);
 
     </script>
 </dom-module>

@@ -107,7 +107,7 @@ class WetAgents {
                 done()
             }
         } catch (err) {
-            done('gainNode error')
+            done('gain error')
             throw new Error(err);
         }
     }
@@ -180,12 +180,30 @@ class WetAgents {
                 done('already exists')
             }
         } catch (err) {
-            done('panner error')
+            done('delay error')
             throw new Error(err);
         }
 
     }
 
+    biquadFilter(done, filter) {
+        try {
+            if (this.sourceNode[filter] === undefined &&
+                this.contextNode[filter] === undefined && filter) {
+                this.contextNode[filter] = this.context.createBiquadFilter();
+                setTimeout(() => {
+                    this.contextNode[filter].onRemove = () => { }
+                    done(null)
+                }, 100)
+            } else {
+                done('already exists')
+            }
+        } catch (err) {
+            done('biquad filter error')
+            throw new Error(err);
+        }
+
+    }
     compressor(done, compressor) {
         try {
             if (this.sourceNode[compressor] === undefined &&
