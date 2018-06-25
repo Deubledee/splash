@@ -30,6 +30,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             section {
                 display: flex;
             }
+
+            @media (max-width: 640px) {
+                paper-dropdown-menu.custom2 {
+                    min-width: 80px;
+                    max-width: 100px;
+                    width: auto;
+                }
+            }
         </style>
 
         <nav>
@@ -81,7 +89,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }
                 }
             }
-            dataChanged(data) {                
+            dataChanged(data) {
                 this.value = data.model.__data.option.id
                 if (data.model.__data.option.id !== 'sources')
                     setTimeout(() => {

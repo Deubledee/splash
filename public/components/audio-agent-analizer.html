@@ -59,6 +59,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     border-bottom: 2px solid chartreuse;
                 }
             }
+           /* @media (min-width: 640px) {
+                
+            }*/
 
             @media (min-width: 1300px) {
                 nav {
@@ -188,7 +191,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: 'analizer1'
                     },
                     itemWidth: {
-                        type: String
+                        type: String,
+                        computed: 'computeMedia(context2d)'
                     },
                     itemHeigt: {
                         type: String
@@ -251,6 +255,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.source = false
                 }
             }
+
+           computeMedia(context2d){
+               if(window.innerWidth <= 773){
+                   this.$.canvas.width = window.innerWidth / 3
+               } else if(window.innerWidth <= 640){
+                   this.$.canvas.width = window.innerWidth / 5
+               }else{
+                this.$.canvas.width = window.innerWidth / 2.5 
+               }
+           }
 
             error(msg, err) {
                 console.error(msg, err);
