@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="./lazy-resources.html">
 <link rel="import" href="./audio-mixtable.html">
+<link rel="import" href="./audio-home.html">
 <link rel="import" href="../public/components/audio-agent-analizer.html">
 <dom-module id="audio-app">
   <template>
@@ -18,6 +19,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
         position: relative;
         min-height: 100vh;
+      }
+
+      a {
+        text-decoration: none;
+        color: var(--app-color)
       }
 
       app-toolbar {
@@ -39,37 +45,60 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: inline-flex;
         width: 99.4%;
       }
-      div[main-area]{
+
+      div[main-area] {
         padding: 3px;
         padding-top: 4px
       }
+
       .column {
         display: flex;
         flex-flow: column;
       }
-     /* audio-mixtable nav[slot="agentArea"]{
+
+      /* audio-mixtable nav[slot="agentArea"]{
         display: table;
       }*/
     </style>
+    <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
+    </app-location>
+    <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}">
+    </app-route>
     <app-header-layout fullbleed>
       <app-header slot="header" reveals>
         <app-toolbar>
           <div main-title>
             <h1>[[appTitle]] </h1>
           </div>
+          <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+            <a name="view1" href="[[rootPath]]home">
+              <paper-button raised>
+                home
+              </paper-button>
+            </a>
+            <a name="view2" href="[[rootPath]]mixtable">
+              <paper-button raised>
+                Open App
+              </paper-button>
+            </a>
+            <paper-button>
+              <a name="view3" href="[[rootPath]]view3">View Three</a>
+            </paper-button>
+          </iron-selector>
         </app-toolbar>
-
-        <div main-area>
-          <audio-mixtable id="mixTable" elem-title="{{elemTitle}}" ocupied="{{ocupied}}">
-            <nav slot="analizerArea">
-            </nav>
-            <nav slot="agentArea"></nav>
-            <nav class="column" slot="sourceArea">
-            </nav>
-            <nav class="column" slot="connectorArea"></nav>
-          </audio-mixtable>
-        </div>
-
+        <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
+          <audio-home name="/home"></audio-home>
+          <div main-area name="/mixtable">
+            <audio-mixtable id="mixTable" elem-title="{{elemTitle}}" ocupied="{{ocupied}}">
+              <nav slot="analizerArea">
+              </nav>
+              <nav slot="agentArea"></nav>
+              <nav class="column" slot="sourceArea">
+              </nav>
+              <nav class="column" slot="connectorArea"></nav>
+            </audio-mixtable>
+          </div>
+        </iron-pages>
       </app-header>
     </app-header-layout>
   </template>
@@ -82,13 +111,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return 'audio-app';
       }
 
-   /*   connectedCallback() {
-        super.connectedCallback();
-        this.isAttached = true;
-      }*/
+      /*   connectedCallback() {
+           super.connectedCallback();
+           this.isAttached = true;
+         }*/
 
       static get properties() {
         return {
+          page: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_pageChanged',
+          },
+          routeData: Object,
+          subroute: Object,
+          rootPath: String,
           ocupied: {
             type: Boolean,
             value: false,
@@ -123,46 +160,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         window.addEventListener('elemem-title', () => {
           this.ocupied = false
         }, false)
-
+        let path = this.route.path === '/' ? '/home' : this.route.path
+        history.pushState({}, null, path)
+        window.dispatchEvent(new CustomEvent('location-changed', {}))
       }
-      _pageLoaded(shouldResetLayout) {
-        this._ensureLazyLoaded();
-      }
-
-      _ensureLazyLoaded() {
-        // load lazy resources after render and set `loadComplete` when done.
-        if (!this.loadComplete) {
-          Polymer.RenderStatus.afterNextRender(this, () => {
-            Polymer.importHref(this.resolveUrl('lazy-resources.html'), () => {
-              this._notifyNetworkStatus();
-              this.loadComplete = true;
-
-              // Load pre-caching Service Worker
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('service-worker.js', {
-                  scope: '/'
-                });
-              }
-            });
-          });
-        }
+      static get observers() {
+        return [
+          '_routePageChanged(route.path)',
+        ];
       }
 
-      /*_notifyNetworkStatus() {
-        let oldOffline = this.offline;
-        this._setOffline(!window.navigator.onLine);
-        // Show the snackbar if the user is offline when starting a new session
-        // or if the network status changed.
-        if (this.offline || (!this.offline && oldOffline === true)) {
-          if (!this._networkSnackbar) {
-            this._networkSnackbar = document.createElement('news-snackbar');
-            this.root.appendChild(this._networkSnackbar);
-          }
-          this._networkSnackbar.textContent == this.offline ?
-            'You are offline' : 'You are online';
-          this._networkSnackbar.open();
-        }
-      }*/
+      _routePageChanged(page) {
+        // If no page was found in the route data, page will be an empty string.
+        // Default to 'view1' in that case.
+        console.log(page, this.routeData, this.route)
+        this.page = page || 'home';
+      }
+
+      _pageChanged(page) {
+        // Load page import on demand. Show 404 page if fails
+        console.log(page)
+        /* const resolvedPageUrl = this.resolveUrl('audio-' + page + '.html');
+        Polymer.importHref(
+          resolvedPageUrl,
+          null,
+          this._showPage404.bind(this),
+          true);*/
+      }
+
+      _showPage404() {
+        this.page = 'view404';
+      }
 
       _refreshData() {
         this.$.data.refresh();

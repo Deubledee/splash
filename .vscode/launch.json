@@ -5,7 +5,7 @@
            "type": "node",
            "request": "launch",
            "name": "startNode",
-           "program": "${workspaceRoot}/bin/www2"
+           "program": "${workspaceRoot}/bin/www"
        },
         {
             "type": "chrome",

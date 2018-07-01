@@ -16,4 +16,6 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/src', express.static(path.join(__dirname, 'src')));
 
 app.use('/', index);
+app.use('/home', index);
+app.use('/mixtable', index);
 module.exports = app;

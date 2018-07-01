@@ -59,4 +59,4 @@ typings/
 #packages
 package.json
 launch.json
-bin/www
+bin/*
