@@ -24,7 +24,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         box-sizing: border-box;
         padding-left: 15%;
         display: flex;
-        flex-flow: column;
+        flex-flow: column;        
+        background-image: url("../public/images/app-image-05.PNG");
+        background-repeat:space;
+        background-position: center;
+        background-size: 100%
       }
 
       article {
@@ -41,25 +45,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         text-align: justify;
         font-weight: bold;
         min-height: 400px;
-        box-shadow: 2px 2px 5px grey;
+        box-shadow: 4px 4px 20px rgb(109, 106, 106);
         border-radius: 10px;
         background: -moz-linear-gradient(top, #000000 0%, #000002 0%, #000002 6%, #635c5c 51%, #635c5c 44%, #000000 102%);
         /* FF3.6-15 */
         background: -webkit-linear-gradient(top, #000000 0%, #000002 0%, #000002 6%, #635c5c 51%, #635c5c 44%, #000000 102%);
-        background: linear-gradient(to bottom, #000000 0%, #000002 0%, #000002 6%, #635c5c 51%, #635c5c 44%, #000000 102%);
+        background: linear-gradient(to bottom, #000000c7 0%, #000002bd 0%, #000002c2 6%, #635c5caf 51%,
+         #635c5cb7 44%, #000000bd 102%);
         /* IE6-9 */
       }
 
-      div[mid-area] {        
+      div[mid-area] {
         font-size: x-large;
-        color: rgb(175, 238, 238);
-        text-shadow: 4px 4px 4px #5475a7;
+        color: rgb(39, 41, 41);
+        text-shadow: 4px 4px 4px rgb(139, 141, 141);
         text-align: center;
         padding-left: 15%;
         padding-right: 15%;
       }
-      div[mid-area] section{
+
+      div[mid-area] section {
         width: 100%;
+      }
+
+      div[mid-area] a {
+        color: rgb(47, 80, 80);
       }
 
       div[mid-area] a,
@@ -132,9 +142,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         div[main] {
           padding-left: 18%;
         }
-        div[mid-area]{
-        padding-left: 15%;
-        padding-right: 15%;
+        div[mid-area] {
+          padding-left: 15%;
+          padding-right: 15%;
         }
       }
 
@@ -159,15 +169,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </span>
       </nav>
     </div>
-    <div mid-area>
-      <section>
-        <h2>
-          Get your sound 'Wet' using
-          <a href="https://developer.mozilla.org/pt-PT/docs/Web/API/Web_Audio_API">web audio api </a>custom
-          <a href="https://www.polymer-project.org/"> web components</a> in a single app.
-        </h2>
-      </section>
-    </div>
     <div main>
       <article>
         App for musicians and web developers
@@ -187,7 +188,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </aside>
       </article>
       <article>
-        aloo aricle #2
+        aloo article #2
       </article>
       <article>
 
