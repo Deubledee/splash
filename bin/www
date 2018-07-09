@@ -7,25 +7,24 @@
 var app = require('../app');
 var debug = require('debug')('myapp:server');
 var http = require('http');
-/*var https = require('https');
+var https = require('https');
 var fs = require('fs');
 var path = require('path')
-var pem = require('pem');*/
+var pem = require('pem');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
-//app.set('port', port);
+var port = normalizePort(process.env.PORT || '3000');app.set('port', port);
 
-//var port2 = normalizePort(process.env.PORT || '3443');
+var port2 = normalizePort(process.env.PORT || '3443');
 
 
 
 /**
  * Create HTTP server.
- *//*
+ */
 pem.createCertificate({ days: 1, selfSigned: true }, function (err, keys) {
   var options = {
     key: keys.serviceKey,
@@ -35,7 +34,7 @@ pem.createCertificate({ days: 1, selfSigned: true }, function (err, keys) {
   server2.listen(port2);
   server2.on('error', onError);
   server2.on('listening', onListening)
-});*/
+});
 
 var server = http.createServer(app);
 /**

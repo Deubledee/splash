@@ -94,6 +94,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Object,
                         observer: 'submit'
                     },
+                    blob: {
+                        type: Object,
+                        notify: true
+                    },
                     disable: {
                         type: Boolean,
                         value: true,
@@ -152,8 +156,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var url, audio
                 if (event.title) {
                     this.$.titleInput.value = event.title.split(' ').join('')
-                    url = URL.createObjectURL(event.blob)
+                    this.blob = event.blob
+                    url = URL.createObjectURL(this.blob)
                     this.$.player.url = url
+                    this.$.player.blob = this.blob
+                    this.$.player.elemTitle = this.elemTitle
+                    this.$.player.agentClass = this.agentClass
                 }
             }
 

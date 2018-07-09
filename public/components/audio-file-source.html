@@ -152,7 +152,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             submit(event) {
                 var fileName = event.target.value.split('\\').pop()
-                let input = event.target;
+                this.input = event.target;
                 let reader = new FileReader();
                 reader.onprogress = evt => {
                     this.loading = 'loading...'
@@ -160,15 +160,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 reader.onload = () => {
                     var dataURL = reader.result;
                     this.$.player.url = dataURL;
+                    this.$.player.elemTitle = this.elemTitle
+                    this.$.player.agentClass = this.agentClass
                     setTimeout(() => {
                         this.loading = 'loaded...'
+                        this.$.player.elemTitle = fileName
+                        this.$.player.blob = this.input.files[0];
                         setTimeout(() => {
                             this.loading = ''
                             this.elemTitle = fileName
                         }, 500)
                     }, 1000)
                 };
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(this.input.files[0]);
             }
 
             setSource(src) {

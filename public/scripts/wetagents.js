@@ -40,7 +40,7 @@ class WetAgents {
                 sourceName) {
                 this.sourceNode[sourceName] = this.context.createMediaElementSource(mediaElement);
                 setTimeout(() => {
-                    this.sourceNode[sourceName].onRemove = () => { }                    
+                    this.sourceNode[sourceName].onRemove = () => { }
                 }, 100)
                 done(false)
                 return
@@ -112,6 +112,24 @@ class WetAgents {
         }
     }
 
+    reverb(done, reverbName, buffer) {  //, distortionCurve) {
+        try {
+            if (this.sourceNode[reverbName] === undefined &&
+                this.contextNode[reverbName] === undefined &&
+                reverbName) {
+                this.contextNode[reverbName] = this.context.createConvolver();
+                this.contextNode[reverbName].buffer = buffer
+                this.contextNode[reverbName].normalize = true 
+                done(null)
+            } else {
+                done('already exists')
+            }
+        } catch (err) {
+            done('waveShaper error')
+            throw new Error(err);
+        }
+    }
+
     waveShaper(done, waveName, overS, amount) {  //, distortionCurve) {
         try {
             if (this.sourceNode[waveName] === undefined &&
@@ -121,7 +139,7 @@ class WetAgents {
                 this.contextNode[waveName].oversample = `${overS}x`;
                 this.contextNode[waveName].curve = this.makeDistortionCurve(parseInt(amount));/* distortionCurve(amount) ||*/
                 setTimeout(() => {
-                    this.contextNode[waveName].onRemove =() => { }
+                    this.contextNode[waveName].onRemove = () => { }
                     done()
                 }, 100)
             } else {
@@ -268,6 +286,17 @@ class WetAgents {
             }
 
             //  agent.changed = true
+        }
+        catch (err) {
+            done(err)
+        }
+    }
+
+    decode(done, arrayBuffer) {
+        try {
+            this.context.decodeAudioData(arrayBuffer, (buff) => {
+                done(buff)
+            })
         }
         catch (err) {
             done(err)

@@ -64,7 +64,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 color: rgb(58, 210, 236)
             }
 
-            audio-svg-progress{
+            audio-svg-progress {
                 position: relative;
                 left: 9px;
             }
@@ -74,7 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <paper-item-body two-line>
                     <paper-input class="diferent" title="Elapsed time" label="Elapsed" value="[[Elapsed]] [[duration]]">
                     </paper-input>
-                      
+
                 </paper-item-body>
             </paper-item>
             <audio-svg-progress id="progress" percentage="{{currentTime}}"></audio-svg-progress>
@@ -89,6 +89,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </paper-icon-button>
                 <paper-icon-button id="loop" on-click="Loop" loop$="[[loop]]" looping$="[[looping]]" icon="av:loop" title="loop">
                 </paper-icon-button>
+            </paper-item>
+            <paper-item>
+                <paper-button id="reverb" on-click="reverb" icon="image:blur-on" title="reverb">
+                    reverb
+                </paper-button>
             </paper-item>
         </nav>
     </template>
@@ -106,15 +111,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 window.addEventListener('connected', (event) => {
                     if (this.elemTitle === event.detail.connected) {
                         this.connected = event.detail.state
-                        console.log(this.connected)
-                        if (this.record === true && this.connected === false) {
-                            this.cancelRecording()
-                        }
+                        /* console.log(this.connected)
+                         if (this.record === true && this.connected === false) {
+                             this.cancelRecording()
+                         }*/
                     }
                 }, false)
             }
             static get properties() {
                 return {
+                    agentClass: {
+                        type: Object
+                    },
                     url: {
                         type: Object,
                         observer: 'setElement'
@@ -143,12 +151,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         notify: true,
                         reflectToAttribute: true
                     },
+                    reverbOn: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
                     elemTitle: {
                         type: String
                     },
                     audio: {
                         type: Object,
                         notify: true
+                    },
+                    blob: {
+                        type: Object
                     },
                     Elapsed: {
                         type: String
@@ -166,7 +183,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             setElement(url) {
                 this.audio = new Audio(url)
-               // console.log('loaded')
+                // console.log('loaded')
                 this.audio.controls = false
                 this.audio.controlsList = 'nodownload'
                 this.audio.crossOrigin = 'anonymous'
@@ -184,11 +201,47 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
+            reverb() {
+                if (this.reverbOn !== true) {
+                    let reader = new FileReader()
+                    this.Elapsed = 'setting reverb...'
+                    reader.onload = (event) => {
+                        var buffer = reader.result;
+                        this.connectReverb(buffer);
+                    };
+                    reader.readAsArrayBuffer(this.blob);
+                } else {
+                    console.log(this.agentClass.contextNode['rev' + this.elemTitle])
+                 // this.agentClass.contextNode['rev' + this.elemTitle].buffer = []
+                }
+            }
+
+            connectReverb(arrayBuffer) {
+                setTimeout(() => {
+                    this.Elapsed = 'decoding...'
+                }, 500)
+                this.agentClass.decode((buff) => {
+                    this.agentClass.reverb((err) => {
+                        if (err === null) {
+                            this.Elapsed = 'reverb set...'
+                            window.dispatchEvent(new CustomEvent('connect', { detail: { element: {type: 'reverb'} } }))
+                            window.dispatchEvent(new CustomEvent('elemem-title', { detail: { title: 'rev' + this.elemTitle } }))
+                            this.reverbOn = true
+                            setTimeout(() => {
+                                this.Elapsed = ''
+                            }, 1000)
+                        } else {
+                            this.Elapsed = err
+                        }
+                    }, 'rev' + this.elemTitle, buff)
+                }, arrayBuffer)
+            }
+
             play() {
                 this.audio.play();
                 this.pause = true;
                 this.active = true;
-                this.audio.ontimeupdate = event => {                   
+                this.audio.ontimeupdate = event => {
                     this.updateTime(event)
                     let figure = parseInt(this.audio.currentTime / this.duration * 100)
                     let figure1 = (this.audio.currentTime / this.duration * 100)  //11 = radius //parseInt(parseInt(this.Elapsed.split(':').join(''))                   

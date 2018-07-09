@@ -87,13 +87,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
+            nav,
             paper-icon-button {
+                padding: 7px;
                 display: none
             }
 
+            nav button {
+                background: #485050;
+                color: white;
+                border-radius: 4px;
+            }
+
+            nav[reverb],
             paper-icon-button[source],
             paper-icon-button[agent] {
-                display: block
+                display: block;
             }
         </style>
         <article>
@@ -107,6 +116,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </div>
                 <paper-icon-button source$="[[source]]" icon="input" title="[[type]]"></paper-icon-button>
                 <paper-icon-button agent$="[[agent]]" icon="av:recent-actors" title="[[type]]"></paper-icon-button>
+                <nav reverb$="[[reverb]]">
+                    <button icon="av:recent-actors" title="[[type]]">
+                        <i>
+                            <b>R</b>
+                        </i>
+                    </button>
+                </nav>
             </section>
             <aside class="show" show$="[[show]]">
                 <paper-dropdown-menu class="custom custom2" label="[[value]]">
@@ -155,28 +171,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this._elemTitleChanged()
                     this._elemDestinationChanged()
                 })
-             /*   this.draggable = true
-                this.ondrag = event=>{
-                    console.log('ondrag', event.srcElement)
-                }
-                this.ondragstart = event=>{
-                    console.log('ondragstart', event)
-                }
-                this.ondragleave = event=>{
-                    console.log('ondragleave', event.srcElement)
-                }
-                this.ondragenter = event=>{
-                    console.log('ondragenter', event.srcElement)
-                }
-                this.ondragend = event=>{
-                    console.log('ondragend', event.srcElement)
-                } 
-                this.ondragover = event=>{
-                    console.log('ondragover', event.srcElement)
-                }
-                this.ondrop = event=>{
-                    console.log('ondrop', event.srcElement)
-                }*/
             }
             static get properties() {
                 return {
@@ -224,6 +218,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         notify: true,
                         reflectToAttribute: true
                     },
+                    reverb: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
                     show: {
                         type: Boolean,
                         value: true,
@@ -237,9 +237,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if (event === 'source' || event === 'stream') {
                     this.source = true
                     this.agent = false
+                    this.reverb = false
                 } else {
-                    this.source = false
-                    this.agent = true
+                    if (event === 'reverb') {
+                        console.log(event)
+                        this.reverb = true
+                        this.source = false
+                        this.agent = false
+                    } else {
+                        this.source = false
+                        this.agent = true
+                        this.reverb = false
+                    }
                 }
             }
 
@@ -345,7 +354,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }, 100)
                 }
             }
-            
+
             error(msg, err) {
                 console.error(msg, err);
             }
@@ -367,7 +376,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
                 if (this.parentElement)
                     this.parentElement.removeChild(this)
-                delete this.agentClass.contextNode[this.permanentType]
             }
         }
         window.customElements.define(audioAgentConnector.is, audioAgentConnector);

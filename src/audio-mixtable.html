@@ -312,7 +312,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           super.disconnectedCallback();
           window.rmoveEventListener('resize', this._boundResizeHandler);
         }*/
-     
+
 
       static get properties() {
         return {
@@ -349,7 +349,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         }
       }
-      
+
       ready() {
         super.ready();
         this.addAnalizer()
@@ -413,7 +413,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       addConnector(element) {
         let connector = document.createElement(`audio-agent-connector`)
-      //  console.log(element.type)
+        //  console.log(element.type)
+        if (element.type === 'reverb') {
+          this.addAgent(element.type)
+        }
         connector.type = element.type
         connector.agentClass = this.agentClass
         this.children[3].append(connector)

@@ -17,8 +17,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             nav {
                 display: inline-flex;
+                box-sizing: border-box;
                 background-color: var(--app-analizer-background-color);
                 float: right;
+                width: 100%;
+                padding-right: 2%;
+                padding-left: 15%;
             }
 
             article {
@@ -59,20 +63,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     border-bottom: 2px solid chartreuse;
                 }
             }
-           /* @media (min-width: 640px) {
-                
+
+            /*
+             @media (max-width: 640px) {
+                canvas {                    
+                    width: 300px;
+                } 
             }*/
+
+            @media (min-width: 720px) {
+                /*  canvas {                    
+                    width: 400px;
+                }*/
+                nav {
+                    padding-left: 2%;
+                    width: 100%;
+                }
+            }
+
+            @media (min-width: 1000px) {
+                /*  canvas {                    
+                    width: 400px;
+                }*/
+                nav {
+                    padding-left: 20%;
+                    width: 100%;
+                }
+            }
 
             @media (min-width: 1300px) {
                 nav {
-                    padding-left: 9.7%;
+                    padding-left: 25%;
                 }
             }
 
             @media (min-width: 1400px) {
-                nav {
-                    padding-left: 11.7%;
-                }
+                /*  nav {
+                    padding-left: %;
+                }*/
             }
 
             @media (min-width: 1550px) {
@@ -133,13 +161,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             ready() {
                 super.ready();
-                let ctx = this.$.canvas.getContext('2d')
-                this.context2d = ctx
-                this.context2d.fillStyle = '#000000'
-                this.context2d.fillRect(0, 0, this.$.canvas.width, this.$.canvas.height)
+                this.setCanvas()
                 this.agentClass.analyser(err => {
                     if (err) { throw this.error('analizer ', err); return }
                 }, this.elemTitle)
+
+                window.addEventListener('resize', () => {
+                    this.computeMedia(this.context2d)
+                })
+
                 window.addEventListener('source', event => {
                     setTimeout(() => {
                         let arr = this.sources
@@ -256,15 +286,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-           computeMedia(context2d){
-               if(window.innerWidth <= 773){
-                   this.$.canvas.width = window.innerWidth / 3
-               } else if(window.innerWidth <= 640){
-                   this.$.canvas.width = window.innerWidth / 5
-               }else{
-                this.$.canvas.width = window.innerWidth / 2.5 
-               }
-           }
+            setCanvas() {
+                let ctx = this.$.canvas.getContext('2d')
+                this.context2d = ctx
+                this.context2d.fillStyle = '#000000'
+                this.context2d.fillRect(0, 0, this.$.canvas.width, this.$.canvas.height)
+            }
+
+            computeMedia(context2d) {
+                if (window.innerWidth <= 773) {
+                    this.$.canvas.style.width = this.$.canvas.width = window.innerWidth / 3
+                } else if (window.innerWidth <= 640) {
+                    this.$.canvas.width = window.innerWidth / 5
+                } else {
+                    this.$.canvas.width = window.innerWidth / 2.5
+                }
+                this.setCanvas()
+            }
 
             error(msg, err) {
                 console.error(msg, err);
@@ -288,7 +326,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             connecTo(event, kill) {
-                let dest = this.agentClass.sourceNode[event.model.__data.source.name] 
+                let dest = this.agentClass.sourceNode[event.model.__data.source.name]
                 if (this.connected.source === false && kill !== true) {
                     this.connectMe(event.model.__data.source.name, dest)
                 } else
@@ -326,7 +364,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             disconnectOther(name) {
-                let dest = this.agentClass.sourceNode[this.connected.sourceName] || this.agentClass.contextNode[this.connected.sourceName]      
+                let dest = this.agentClass.sourceNode[this.connected.sourceName] || this.agentClass.contextNode[this.connected.sourceName]
                 this.agentClass.connectAgents((err) => {
                     if (err) { throw this.error('connector ', err); return }
                     this.connected.source = false

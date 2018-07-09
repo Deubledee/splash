@@ -160,7 +160,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     let rectx = duration >= 100 ? percentage / 100 * 189 : percentage / 100 * 125
                     let radius = parseInt(getComputedStyle(this.$.circle, null).r.split('px')[0])
                     this.$.circle.style.cx = parseInt(x) + radius
-                    this.$.rect2.style.width = parseInt(rectx) + 'px'                    
+                    this.$.rect2.style.width = parseInt(rectx) + 'px'
                     //this.Hover = false
                 }
             }
@@ -170,20 +170,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 //kinda morbid i know
                 var alive = event => {
                     event.preventDefault()
+                    event.target.onmouseover()
                     this.goToX(event)
                     this.moving = true
                 }
 
                 var dead = event => {
                     event.preventDefault()
+                    event.target.onmouseout()
                     event.target.onmousemove = {}
                     this.moving = false
                 }
-                evt.target.onmouseover()
                 evt.target.onmousemove = alive
                 evt.target.onmouseup = dead
                 evt.target.onmouseleave = dead
-
             }
         }
         window.customElements.define(audioSvgProgress.is, audioSvgProgress);
